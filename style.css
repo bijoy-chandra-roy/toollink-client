@@ -105,10 +105,105 @@ body {
   align-items: center;
 }
 
+/* main */
 main {
   min-height: 100vh;
 }
 
+/* categories */
+.categories-section {
+  padding: 60px 32px;
+  width: 100%;
+  margin: 0 auto;
+}
+
+.section-title {
+  text-align: center;
+  text-transform: uppercase;
+  font-size: 28px;
+  margin-bottom: 40px;
+  font-weight: 500;
+  letter-spacing: 1px;
+}
+
+/* grid */
+.categories-grid {
+  display: grid;
+  grid-template-columns: 2fr 3fr;
+  gap: 20px;
+  height: 600px;
+}
+
+.cat-right-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  grid-template-rows: 1fr 1fr;
+  gap: 20px;
+  height: 100%;
+}
+
+.cat-item {
+  position: relative;
+  overflow: hidden;
+  border-radius: 4px;
+  background-color: #f0f0f0;
+}
+
+.cat-bg {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-size: cover;
+  background-position: center;
+  transition: transform 0.5s ease;
+}
+
+.cat-item:hover .cat-bg {
+  transform: scale(1.05);
+}
+
+.cat-content {
+  position: absolute;
+  top: 20px;
+  left: 20px;
+  z-index: 2;
+  background-color: rgba(255, 255, 255, 0.8);
+  padding: 15px;
+  border-radius: 4px;
+}
+
+.cat-content h3 {
+  margin: 0;
+  text-transform: uppercase;
+  font-size: 18px;
+  font-weight: 700;
+}
+
+.cat-content p {
+  margin: 5px 0 10px 0;
+  color: #666;
+  font-size: 14px;
+}
+
+.cat-link {
+  text-decoration: none;
+  color: #222;
+  font-weight: 600;
+  font-size: 14px;
+  text-transform: uppercase;
+  border-bottom: 2px solid #222;
+  padding-bottom: 2px;
+  transition: color 0.3s, border-color 0.3s;
+}
+
+.cat-link:hover {
+  color: #555;
+  border-color: #555;
+}
+
+/* footer */
 footer {
   background-color: #fff;
   border-top: 1px solid #e5e5e5;
@@ -134,13 +229,11 @@ footer {
   align-items: flex-start;
 }
 
-/* Middle columns (Company, Discover) - align center */
 .footer-column:nth-child(2),
 .footer-column:nth-child(3) {
   text-align: center;
 }
 
-/* Last column (Help) - aligns right */
 .footer-column:last-child {
   text-align: right;
   align-items: flex-end;
@@ -210,4 +303,21 @@ footer {
   border-top: 1px solid #eee;
   font-size: 14px;
   color: #666;
+}
+
+/* mobile responsiveness */
+@media (max-width: 768px) {
+  .categories-grid {
+    grid-template-columns: 1fr;
+    height: auto;
+  }
+
+  .cat-right-grid {
+    grid-template-columns: 1fr;
+    height: auto;
+  }
+
+  .cat-item {
+    height: 300px;
+  }
 }

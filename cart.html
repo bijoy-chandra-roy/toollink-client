@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Shopping Cart - ToolLink</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
+        integrity="sha512-SnH5WK+bZxgPHs44uWIX+LLJAJ9/2PkPKZ5QiAj6Ta86w+fsb2TkcmfRyVX3pBnMFcV7oQPJkl9QevSCWr3W6A=="
+        crossorigin="anonymous" referrerpolicy="no-referrer" />
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Jost:ital,wght@0,100..900;1,100..900&display=swap"
+        rel="stylesheet">
+
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+    <header id="navbar-container"></header>
+
+    <main>
+        <div class="page-header">
+            <div class="container">
+                <h1 class="page-title">Shopping Cart</h1>
+            </div>
+        </div>
+
+        <section class="cart-section">
+            <div class="container cart-container">
+                <div class="cart-items">
+                    
+                    <div class="cart-item">
+                        <div class="cart-item-image">
+                            <img src="./assets/vecteezy_cordless-electric-drill-with-battery-pack-ideal-for-various_69716390.jpeg" alt="Drill">
+                        </div>
+                        <div class="cart-item-details">
+                            <p class="cart-item-category">Power Tools</p>
+                            <h3 class="cart-item-title"><a href="tool-details.html">Cordless Drill Set</a></h3>
+                            <div class="cart-item-price">$15.00 / day</div>
+                        </div>
+                        <div class="cart-item-controls">
+                            <div class="date-picker-group">
+                                <label>Duration</label>
+                                <div class="rental-days-input">
+                                    <button class="qty-btn minus">-</button>
+                                    <input type="number" value="2" min="1" readonly>
+                                    <button class="qty-btn plus">+</button>
+                                </div>
+                                <span class="days-label">Days</span>
+                            </div>
+                            <div class="item-total-price">
+                                $30.00
+                            </div>
+                            <button class="btn-remove"><i class="fa-solid fa-xmark"></i></button>
+                        </div>
+                    </div>
+
+                    <div class="cart-item">
+                        <div class="cart-item-image">
+                            <img src="./assets/vecteezy_step-ladder-in-a-frame-configuration-on-white-background_72123824.jpg" alt="Ladder">
+                        </div>
+                        <div class="cart-item-details">
+                            <p class="cart-item-category">Renovation</p>
+                            <h3 class="cart-item-title"><a href="tool-details.html">Aluminum Step Ladder</a></h3>
+                            <div class="cart-item-price">$12.00 / day</div>
+                        </div>
+                        <div class="cart-item-controls">
+                            <div class="date-picker-group">
+                                <label>Duration</label>
+                                <div class="rental-days-input">
+                                    <button class="qty-btn minus">-</button>
+                                    <input type="number" value="1" min="1" readonly>
+                                    <button class="qty-btn plus">+</button>
+                                </div>
+                                <span class="days-label">Day</span>
+                            </div>
+                            <div class="item-total-price">
+                                $12.00
+                            </div>
+                            <button class="btn-remove"><i class="fa-solid fa-xmark"></i></button>
+                        </div>
+                    </div>
+
+                </div>
+
+                <div class="cart-summary">
+                    <h3 class="summary-title">Order Summary</h3>
+                    <div class="summary-row">
+                        <span>Subtotal</span>
+                        <span>$42.00</span>
+                    </div>
+                    <div class="summary-row">
+                        <span>Service Fee (5%)</span>
+                        <span>$2.10</span>
+                    </div>
+                    <div class="summary-row">
+                        <span>Insurance (Optional)</span>
+                        <span>$5.00</span>
+                    </div>
+                    <div class="summary-divider"></div>
+                    <div class="summary-row total-row">
+                        <span>Total</span>
+                        <span>$49.10</span>
+                    </div>
+                    <button class="btn-submit btn-checkout">Proceed to Checkout</button>
+                    <a href="tools.html" class="continue-shopping">Continue Shopping</a>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer id="footer-container"></footer>
+
+    <script src="./scripts/navbar.js"></script>
+    <script src="./scripts/footer.js"></script>
+</body>
+
+</html>

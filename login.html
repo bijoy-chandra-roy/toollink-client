@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - ToolLink</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
+        integrity="sha512-SnH5WK+bZxgPHs44uWIX+LLJAJ9/2PkPKZ5QiAj6Ta86w+fsb2TkcmfRyVX3pBnMFcV7oQPJkl9QevSCWr3W6A=="
+        crossorigin="anonymous" referrerpolicy="no-referrer" />
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Jost:ital,wght@0,100..900;1,100..900&display=swap"
+        rel="stylesheet">
+
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+    <header id="navbar-container"></header>
+
+    <main>
+        <section class="auth-section">
+            <div class="auth-container">
+                <div class="auth-tabs">
+                    <button class="auth-tab active" onclick="switchTab('login')">Login</button>
+                    <button class="auth-tab" onclick="switchTab('register')">Register</button>
+                </div>
+
+                <form id="login-form" class="auth-form active" onsubmit="handleLogin(event)">
+                    <h3 class="auth-title">Welcome Back</h3>
+                    <div class="form-group">
+                        <label>User ID / Email</label>
+                        <input type="text" id="login-userid" class="form-control" placeholder="Enter your User ID" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Password</label>
+                        <input type="password" id="login-password" class="form-control" placeholder="Enter your password" required>
+                    </div>
+                    <div id="login-error" class="error-message hidden">Invalid User ID or Password</div>
+                    <button type="submit" class="btn-submit">Log In</button>
+                    <p class="auth-note">Demo User ID: <strong>user1</strong> | Pass: <strong>1234</strong></p>
+                </form>
+
+                <form id="register-form" class="auth-form" onsubmit="handleRegister(event)">
+                    <h3 class="auth-title">Create Account</h3>
+                    <div class="form-group">
+                        <label>User ID (Unique)</label>
+                        <input type="text" id="reg-userid" class="form-control" placeholder="Choose a User ID" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Full Name</label>
+                        <input type="text" id="reg-username" class="form-control" placeholder="Your Full Name" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Password</label>
+                        <input type="password" id="reg-password" class="form-control" placeholder="Create a password" required>
+                    </div>
+                    <div id="reg-error" class="error-message hidden">User ID already exists</div>
+                    <button type="submit" class="btn-submit">Register</button>
+                </form>
+            </div>
+        </section>
+    </main>
+
+    <footer id="footer-container"></footer>
+
+    <script src="./scripts/navbar.js"></script>
+    <script src="./scripts/footer.js"></script>
+    <script src="./scripts/login.js"></script>
+</body>
+
+</html>

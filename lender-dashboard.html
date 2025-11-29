@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lender Dashboard - ToolLink</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
+        integrity="sha512-SnH5WK+bZxgPHs44uWIX+LLJAJ9/2PkPKZ5QiAj6Ta86w+fsb2TkcmfRyVX3pBnMFcV7oQPJkl9QevSCWr3W6A=="
+        crossorigin="anonymous" referrerpolicy="no-referrer" />
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Jost:ital,wght@0,100..900;1,100..900&display=swap"
+        rel="stylesheet">
+
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+    <header id="navbar-container"></header>
+
+    <main>
+        <div class="page-header">
+            <div class="container d-flex-between">
+                <h1 class="page-title">My Listings</h1>
+                <a href="index.html" class="btn-primary-sm"><i class="fa-solid fa-plus"></i> List New Tool</a>
+            </div>
+        </div>
+
+        <section class="dashboard-section">
+            <div class="container">
+                <div class="dashboard-stats">
+                    <div class="stat-card">
+                        <div class="stat-icon icon-earnings">
+                            <i class="fa-solid fa-sack-dollar"></i>
+                        </div>
+                        <div class="stat-info">
+                            <span class="stat-label">Total Earnings</span>
+                            <span class="stat-value">$1,240.50</span>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon icon-tools">
+                            <i class="fa-solid fa-toolbox"></i>
+                        </div>
+                        <div class="stat-info">
+                            <span class="stat-label">Active Listings</span>
+                            <span class="stat-value">12</span>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon icon-rentals">
+                            <i class="fa-solid fa-hand-holding-hand"></i>
+                        </div>
+                        <div class="stat-info">
+                            <span class="stat-label">Current Rentals</span>
+                            <span class="stat-value">3</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="dashboard-list">
+                    
+                    <div class="lender-card">
+                        <div class="lender-card-header">
+                            <div class="tool-id">ID: #TL-1024</div>
+                            <div class="status-badge status-rented">Rented Out</div>
+                        </div>
+                        <div class="lender-card-body">
+                            <div class="lender-image">
+                                <img src="./assets/vecteezy_cordless-electric-drill-with-battery-pack-ideal-for-various_69716390.jpeg" alt="Drill">
+                            </div>
+                            <div class="lender-info">
+                                <h3 class="tool-name">Professional Bosch Hammer Drill</h3>
+                                <p class="tool-category">Power Tools</p>
+                                <div class="renter-info">
+                                    <i class="fa-regular fa-user"></i>
+                                    <span>Rented by: <strong>John Doe</strong></span>
+                                </div>
+                                <div class="return-date">
+                                    <i class="fa-regular fa-clock"></i>
+                                    <span>Returns: Oct 28, 2025</span>
+                                </div>
+                            </div>
+                            <div class="lender-pricing">
+                                <span class="price-label">Daily Rate</span>
+                                <span class="price-amount">$15.00</span>
+                            </div>
+                        </div>
+                        <div class="lender-card-footer">
+                            <button class="btn-outline">Contact Renter</button>
+                            <button class="btn-outline">View Contract</button>
+                        </div>
+                    </div>
+
+                    <div class="lender-card">
+                        <div class="lender-card-header">
+                            <div class="tool-id">ID: #TL-1025</div>
+                            <div class="status-badge status-available">Available</div>
+                        </div>
+                        <div class="lender-card-body">
+                            <div class="lender-image">
+                                <img src="./assets/vecteezy_professional-metal-torque-wrench-with-black-handle-on-white_68632739.jpg" alt="Wrench">
+                            </div>
+                            <div class="lender-info">
+                                <h3 class="tool-name">Torque Wrench Set</h3>
+                                <p class="tool-category">Auto Repair</p>
+                                <div class="listing-stats">
+                                    <span><i class="fa-regular fa-eye"></i> 45 Views</span>
+                                    <span><i class="fa-regular fa-heart"></i> 12 Saves</span>
+                                </div>
+                            </div>
+                            <div class="lender-pricing">
+                                <span class="price-label">Daily Rate</span>
+                                <span class="price-amount">$8.00</span>
+                            </div>
+                        </div>
+                        <div class="lender-card-footer">
+                            <button class="btn-outline">Edit Listing</button>
+                            <button class="btn-outline text-red">Pause</button>
+                        </div>
+                    </div>
+
+                    <div class="lender-card">
+                        <div class="lender-card-header">
+                            <div class="tool-id">ID: #TL-1026</div>
+                            <div class="status-badge status-maintenance">Maintenance</div>
+                        </div>
+                        <div class="lender-card-body">
+                            <div class="lender-image">
+                                <img src="./assets/vecteezy_red-gas-powered-lawn-mower-isolated-on-white-background_69896932.jpg" alt="Mower">
+                            </div>
+                            <div class="lender-info">
+                                <h3 class="tool-name">Gas Lawn Mower</h3>
+                                <p class="tool-category">Gardening</p>
+                                <p class="maintenance-note">Note: Blades need sharpening</p>
+                            </div>
+                            <div class="lender-pricing">
+                                <span class="price-label">Daily Rate</span>
+                                <span class="price-amount">$35.00</span>
+                            </div>
+                        </div>
+                        <div class="lender-card-footer">
+                            <button class="btn-outline">Edit Listing</button>
+                            <button class="btn-primary-sm">Mark Available</button>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer id="footer-container"></footer>
+
+    <script src="./scripts/navbar.js"></script>
+    <script src="./scripts/footer.js"></script>
+</body>
+
+</html>

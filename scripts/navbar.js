@@ -19,7 +19,7 @@ const renderNavbar = () => {
 
             <nav class="nav-links">
                 <a href="index.html">Home</a>
-                <a href="browse.html">Tools</a>
+                <a href="tools.html">Tools</a>
             </nav>
 
             <div class="nav-actions">

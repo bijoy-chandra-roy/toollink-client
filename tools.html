@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Browse Tools - ToolLink</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
+        integrity="sha512-SnH5WK+bZxgPHs44uWIX+LLJAJ9/2PkPKZ5QiAj6Ta86w+fsb2TkcmfRyVX3pBnMFcV7oQPJkl9QevSCWr3W6A=="
+        crossorigin="anonymous" referrerpolicy="no-referrer" />
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Jost:ital,wght@0,100..900;1,100..900&display=swap"
+        rel="stylesheet">
+
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+    <header id="navbar-container"></header>
+
+    <main>
+        <section class="list-tool-section">
+            <div class="container">
+                <div class="form-container">
+                    <h3 class="form-title">List Your Tool</h3>
+                    <form class="list-tool-form" onsubmit="event.preventDefault();">
+                        <div class="form-row">
+                            <div class="form-group">
+                                <input type="text" class="form-control" placeholder="Tool Name (e.g. Hammer)" required>
+                            </div>
+                            <div class="form-group">
+                                <select class="form-control" required>
+                                    <option value="" disabled selected hidden>Select Category</option>
+                                    <option value="renovation">Renovation</option>
+                                    <option value="power-tools">Power Tools</option>
+                                    <option value="gardening">Gardening</option>
+                                    <option value="auto">Auto Repair</option>
+                                    <option value="hand-tools">Hand Tools</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <input type="number" class="form-control" placeholder="Price per Day ($)" min="1"
+                                    required>
+                            </div>
+                            <div class="form-group">
+                                <input type="text" class="form-control" placeholder="Image URL" required>
+                            </div>
+                        </div>
+                        <button type="submit" class="btn-submit">List Tool</button>
+                    </form>
+                </div>
+            </div>
+        </section>
+
+        <div class="page-header">
+            <div class="container">
+                <h1 class="page-title">Browse Tools</h1>
+            </div>
+        </div>
+
+        <section class="shop-section">
+            <div class="container shop-container">
+                <aside class="shop-sidebar">
+                    <div class="sidebar-widget">
+                        <h4 class="widget-title">Categories</h4>
+                        <ul class="category-list">
+                            <li><a href="#" class="active">All Tools</a></li>
+                            <li><a href="#">Renovation</a></li>
+                            <li><a href="#">Power Tools</a></li>
+                            <li><a href="#">Gardening</a></li>
+                            <li><a href="#">Auto Repair</a></li>
+                            <li><a href="#">Hand Tools</a></li>
+                        </ul>
+                    </div>
+                </aside>
+
+                <div class="shop-content">
+                    <div class="shop-toolbar">
+                        <p class="result-count">Showing 4 of 12 results</p>
+                        <select class="sort-select form-control">
+                            <option>Default Sorting</option>
+                            <option>Price: Low to High</option>
+                            <option>Price: High to Low</option>
+                            <option>Newest First</option>
+                        </select>
+                    </div>
+
+                    <div class="listings-grid shop-grid">
+
+                        <div class="listing-card">
+                            <div class="listing-image">
+                                <img src="./assets/vecteezy_step-ladder-in-a-frame-configuration-on-white-background_72123824.jpg"
+                                    alt="Ladder">
+                                <button class="wishlist-btn"><i class="fa-regular fa-heart"></i></button>
+                                <div class="listing-actions">
+                                    <button class="btn-cart-action">Add to Cart</button>
+                                    <button class="btn-rent">Rent Now</button>
+                                </div>
+                            </div>
+                            <div class="listing-info">
+                                <p class="listing-category">Renovation</p>
+                                <h3 class="listing-title"><a href="tool-details.html">Aluminum Step Ladder</a></h3>
+                                <div class="listing-price">$12 / day</div>
+                            </div>
+                        </div>
+
+                        <div class="listing-card">
+                            <div class="listing-image">
+                                <img src="./assets/vecteezy_vacuum-cleaner-isolated-on-white-background_50631786.jpg"
+                                    alt="Vacuum">
+                                <button class="wishlist-btn"><i class="fa-regular fa-heart"></i></button>
+                                <div class="listing-actions">
+                                    <button class="btn-cart-action">Add to Cart</button>
+                                    <button class="btn-rent">Rent Now</button>
+                                </div>
+                            </div>
+                            <div class="listing-info">
+                                <p class="listing-category">Cleaning</p>
+                                <h3 class="listing-title"><a href="tool-details.html">Industrial Vacuum</a></h3>
+                                <div class="listing-price">$25 / day</div>
+                            </div>
+                        </div>
+
+                        <div class="listing-card">
+                            <div class="listing-image">
+                                <img src="./assets/vecteezy_cordless-electric-drill-with-battery-pack-ideal-for-various_69716390.jpeg"
+                                    alt="Drill">
+                                <button class="wishlist-btn"><i class="fa-regular fa-heart"></i></button>
+                                <div class="listing-actions">
+                                    <button class="btn-cart-action">Add to Cart</button>
+                                    <button class="btn-rent">Rent Now</button>
+                                </div>
+                            </div>
+                            <div class="listing-info">
+                                <p class="listing-category">Power Tools</p>
+                                <h3 class="listing-title"><a href="tool-details.html">Cordless Drill Set</a></h3>
+                                <div class="listing-price">$15 / day</div>
+                            </div>
+                        </div>
+
+                        <div class="listing-card">
+                            <div class="listing-image">
+                                <img src="./assets/vecteezy_red-gas-powered-lawn-mower-isolated-on-white-background_69896932.jpg"
+                                    alt="Mower">
+                                <button class="wishlist-btn"><i class="fa-regular fa-heart"></i></button>
+                                <div class="listing-actions">
+                                    <button class="btn-cart-action">Add to Cart</button>
+                                    <button class="btn-rent">Rent Now</button>
+                                </div>
+                            </div>
+                            <div class="listing-info">
+                                <p class="listing-category">Gardening</p>
+                                <h3 class="listing-title"><a href="tool-details.html">Gas Lawn Mower</a></h3>
+                                <div class="listing-price">$35 / day</div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer id="footer-container"></footer>
+
+    <script src="./scripts/navbar.js"></script>
+    <script src="./scripts/footer.js"></script>
+    <script src="./scripts/tools.js"></script>
+    <script src="./scripts/script.js"></script>
+</body>
+
+</html>

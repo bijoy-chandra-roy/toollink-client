@@ -24,7 +24,8 @@
         <div class="page-header">
             <div class="container d-flex-between">
                 <h1 class="page-title">My Listings</h1>
-                <a href="index.html?action=list-tool" class="btn-primary-sm"><i class="fa-solid fa-plus"></i> List New Tool</a>
+                <a href="index.html?action=list-tool" class="btn-primary-sm"><i class="fa-solid fa-plus"></i> List New
+                    Tool</a>
             </div>
         </div>
 
@@ -59,103 +60,52 @@
                         </div>
                     </div>
                 </div>
-
                 <div class="dashboard-list">
-                    
-                    <div class="lender-card">
-                        <div class="lender-card-header">
-                            <div class="tool-id">ID: #TL-1024</div>
-                            <div class="status-badge status-rented">Rented Out</div>
-                        </div>
-                        <div class="lender-card-body">
-                            <div class="lender-image">
-                                <img src="./assets/vecteezy_cordless-electric-drill-with-battery-pack-ideal-for-various_69716390.jpeg" alt="Drill">
-                            </div>
-                            <div class="lender-info">
-                                <h3 class="tool-name">Professional Bosch Hammer Drill</h3>
-                                <p class="tool-category">Power Tools</p>
-                                <div class="renter-info">
-                                    <i class="fa-regular fa-user"></i>
-                                    <span>Rented by: <strong>John Doe</strong></span>
-                                </div>
-                                <div class="return-date">
-                                    <i class="fa-regular fa-clock"></i>
-                                    <span>Returns: Oct 28, 2025</span>
-                                </div>
-                            </div>
-                            <div class="lender-pricing">
-                                <span class="price-label">Daily Rate</span>
-                                <span class="price-amount">$15.00</span>
-                            </div>
-                        </div>
-                        <div class="lender-card-footer">
-                            <button class="btn-outline">Contact Renter</button>
-                            <button class="btn-outline">View Contract</button>
-                        </div>
-                    </div>
-
-                    <div class="lender-card">
-                        <div class="lender-card-header">
-                            <div class="tool-id">ID: #TL-1025</div>
-                            <div class="status-badge status-available">Available</div>
-                        </div>
-                        <div class="lender-card-body">
-                            <div class="lender-image">
-                                <img src="./assets/vecteezy_professional-metal-torque-wrench-with-black-handle-on-white_68632739.jpg" alt="Wrench">
-                            </div>
-                            <div class="lender-info">
-                                <h3 class="tool-name">Torque Wrench Set</h3>
-                                <p class="tool-category">Auto Repair</p>
-                                <div class="listing-stats">
-                                    <span><i class="fa-regular fa-eye"></i> 45 Views</span>
-                                    <span><i class="fa-regular fa-heart"></i> 12 Saves</span>
-                                </div>
-                            </div>
-                            <div class="lender-pricing">
-                                <span class="price-label">Daily Rate</span>
-                                <span class="price-amount">$8.00</span>
-                            </div>
-                        </div>
-                        <div class="lender-card-footer">
-                            <button class="btn-outline">Edit Listing</button>
-                            <button class="btn-outline text-red">Pause</button>
-                        </div>
-                    </div>
-
-                    <div class="lender-card">
-                        <div class="lender-card-header">
-                            <div class="tool-id">ID: #TL-1026</div>
-                            <div class="status-badge status-maintenance">Maintenance</div>
-                        </div>
-                        <div class="lender-card-body">
-                            <div class="lender-image">
-                                <img src="./assets/vecteezy_red-gas-powered-lawn-mower-isolated-on-white-background_69896932.jpg" alt="Mower">
-                            </div>
-                            <div class="lender-info">
-                                <h3 class="tool-name">Gas Lawn Mower</h3>
-                                <p class="tool-category">Gardening</p>
-                                <p class="maintenance-note">Note: Blades need sharpening</p>
-                            </div>
-                            <div class="lender-pricing">
-                                <span class="price-label">Daily Rate</span>
-                                <span class="price-amount">$35.00</span>
-                            </div>
-                        </div>
-                        <div class="lender-card-footer">
-                            <button class="btn-outline">Edit Listing</button>
-                            <button class="btn-primary-sm">Mark Available</button>
-                        </div>
-                    </div>
-
                 </div>
             </div>
         </section>
+
+        <div id="edit-modal" class="modal-overlay">
+            <div class="modal-container">
+                <button class="close-modal" onclick="closeEditModal()"><i class="fa-solid fa-xmark"></i></button>
+                <h3 class="form-title">Edit Listing</h3>
+
+                <form id="edit-tool-form" onsubmit="handleUpdateTool(event)">
+                    <input type="hidden" id="edit-tool-id">
+
+                    <div class="form-group">
+                        <label>Tool Name</label>
+                        <input type="text" id="edit-name" class="form-control" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Category</label>
+                        <select id="edit-category" class="form-control" required>
+                            <option value="renovation">Renovation</option>
+                            <option value="power-tools">Power Tools</option>
+                            <option value="gardening">Gardening</option>
+                            <option value="auto">Auto Repair</option>
+                            <option value="cleaning">Cleaning</option>
+                            <option value="hand-tools">Hand Tools</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Price per Day ($)</label>
+                        <input type="number" id="edit-price" class="form-control" min="1" required>
+                    </div>
+
+                    <button type="submit" class="btn-submit mt-3">Save Changes</button>
+                </form>
+            </div>
+        </div>
     </main>
 
     <footer id="footer-container"></footer>
 
     <script src="./scripts/navbar.js"></script>
     <script src="./scripts/footer.js"></script>
+    <script src="./scripts/dashboard.js"></script>
 </body>
 
 </html>

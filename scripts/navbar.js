@@ -19,7 +19,7 @@ const renderNavbar = () => {
                 <div class="dropdown-content">
                     <div class="dropdown-header">
                         <span>Signed in as</span>
-                        <strong>${user.userName}</strong>
+                        <a href="profile.html"><strong>${user.userName}</strong></a>
                     </div>
                     <a href="lender-dashboard.html"><i class="fa-solid fa-toolbox"></i> My Listings</a>
                     <a href="my-orders.html"><i class="fa-solid fa-clipboard-list"></i> My Orders</a>

@@ -25,7 +25,7 @@
             <div class="container">
                 <div class="form-container">
                     <h3 class="form-title">List Your Tool</h3>
-                    <form class="list-tool-form" onsubmit="event.preventDefault();">
+                    <form class="list-tool-form" onsubmit="handleListTool(event)">
                         <div class="form-row">
                             <div class="form-group">
                                 <input type="text" class="form-control" placeholder="Tool Name (e.g. Hammer)" required>
@@ -125,77 +125,8 @@
         <section class="recent-listings-section">
             <h2 class="section-title">Recent Listings</h2>
 
-            <div class="listings-grid">
+            <div class="listings-grid"></div>
 
-                <div class="listing-card">
-                    <div class="listing-image">
-                        <img src="./assets/vecteezy_step-ladder-in-a-frame-configuration-on-white-background_72123824.jpg"
-                            alt="Ladder">
-                        <button class="wishlist-btn"><i class="fa-regular fa-heart"></i></button>
-                        <div class="listing-actions">
-                            <button class="btn-cart-action">Add to Cart</button>
-                            <button class="btn-rent">Rent Now</button>
-                        </div>
-                    </div>
-                    <div class="listing-info">
-                        <p class="listing-category">Renovation</p>
-                        <h3 class="listing-title"><a href="tool-details.html">Aluminum Step Ladder</a></h3>
-                        <div class="listing-price">$12 / day</div>
-                    </div>
-                </div>
-
-                <div class="listing-card">
-                    <div class="listing-image">
-                        <img src="./assets/vecteezy_vacuum-cleaner-isolated-on-white-background_50631786.jpg"
-                            alt="Vacuum">
-                        <button class="wishlist-btn"><i class="fa-regular fa-heart"></i></button>
-                        <div class="listing-actions">
-                            <button class="btn-cart-action">Add to Cart</button>
-                            <button class="btn-rent">Rent Now</button>
-                        </div>
-                    </div>
-                    <div class="listing-info">
-                        <p class="listing-category">Cleaning</p>
-                        <h3 class="listing-title"><a href="tool-details.html">Industrial Vacuum</a></h3>
-                        <div class="listing-price">$25 / day</div>
-                    </div>
-                </div>
-
-                <div class="listing-card">
-                    <div class="listing-image">
-                        <img src="./assets/vecteezy_cordless-electric-drill-with-battery-pack-ideal-for-various_69716390.jpeg"
-                            alt="Drill">
-                        <button class="wishlist-btn"><i class="fa-regular fa-heart"></i></button>
-                        <div class="listing-actions">
-                            <button class="btn-cart-action">Add to Cart</button>
-                            <button class="btn-rent">Rent Now</button>
-                        </div>
-                    </div>
-                    <div class="listing-info">
-                        <p class="listing-category">Power Tools</p>
-                        <h3 class="listing-title"><a href="tool-details.html">Cordless Drill Set</a></h3>
-                        <div class="listing-price">$15 / day</div>
-                    </div>
-                </div>
-
-                <div class="listing-card">
-                    <div class="listing-image">
-                        <img src="./assets/vecteezy_red-gas-powered-lawn-mower-isolated-on-white-background_69896932.jpg"
-                            alt="Mower">
-                        <button class="wishlist-btn"><i class="fa-regular fa-heart"></i></button>
-                        <div class="listing-actions">
-                            <button class="btn-cart-action">Add to Cart</button>
-                            <button class="btn-rent">Rent Now</button>
-                        </div>
-                    </div>
-                    <div class="listing-info">
-                        <p class="listing-category">Gardening</p>
-                        <h3 class="listing-title"><a href="tool-details.html">Gas Lawn Mower</a></h3>
-                        <div class="listing-price">$35 / day</div>
-                    </div>
-                </div>
-
-            </div>
             <div class="view-all-container">
                 <a href="tools.html" class="btn-view-all">View All Tools</a>
             </div>

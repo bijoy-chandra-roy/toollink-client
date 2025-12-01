@@ -18,13 +18,9 @@ const fetchWishlistIds = async () => {
 
 // --- Shared: Toggle Wishlist Function ---
 const toggleWishlist = async (toolId, btn) => {
-    const userString = localStorage.getItem("loggedInUser");
-    if (!userString) {
-        alert("Please login to use the wishlist.");
-        window.location.href = "login.html";
-        return;
-    }
-    const user = JSON.parse(userString);
+    const user = window.checkLogin();
+    if (!user) return;
+
     const icon = btn.querySelector('i');
     const isLiked = icon.classList.contains('fa-solid');
 
@@ -34,14 +30,17 @@ const toggleWishlist = async (toolId, btn) => {
             icon.classList.remove('fa-solid');
             icon.classList.add('fa-regular');
             btn.classList.remove('active');
-
+            
+            // Handle removal if on wishlist page
             if (window.location.pathname.includes("wishlist.html")) {
                 const card = btn.closest('.listing-card');
-                if (card) card.remove();
-                const grid = document.querySelector('.listings-grid');
-                if (grid && grid.children.length === 0) grid.innerHTML = "<p>Your wishlist is empty.</p>";
+                if(card) card.remove();
+                // Check if empty
+                if(document.querySelector('.listings-grid').children.length === 0) {
+                    document.querySelector('.listings-grid').innerHTML = "<p>Your wishlist is empty.</p>";
+                }
             }
-            if (typeof userWishlistIds !== 'undefined') userWishlistIds = userWishlistIds.filter(id => id !== toolId);
+            userWishlistIds = userWishlistIds.filter(id => id !== toolId);
         } else {
             await fetch("http://localhost:5000/addToWishlist", {
                 method: "POST",
@@ -51,8 +50,12 @@ const toggleWishlist = async (toolId, btn) => {
             icon.classList.remove('fa-regular');
             icon.classList.add('fa-solid');
             btn.classList.add('active');
-            if (typeof userWishlistIds !== 'undefined') userWishlistIds.push(toolId);
+            userWishlistIds.push(toolId);
         }
+        
+        // UPDATE BADGES HERE
+        if(window.updateNavbarBadges) window.updateNavbarBadges();
+
     } catch (error) {
         console.error("Wishlist toggle error:", error);
     }
@@ -60,10 +63,7 @@ const toggleWishlist = async (toolId, btn) => {
 
 // --- Shared: Add to Cart Function ---
 const addToCart = (toolId, name, price, image, category) => {
-    // 1. Get existing cart from LocalStorage
     let cart = JSON.parse(localStorage.getItem("toolLinkCart")) || [];
-
-    // 2. Check if item already exists
     const existingItem = cart.find(item => item.toolId === toolId);
 
     if (existingItem) {
@@ -71,22 +71,20 @@ const addToCart = (toolId, name, price, image, category) => {
         return;
     }
 
-    // 3. Add new item
     cart.push({
         toolId,
         toolName: decodeURIComponent(name),
         price,
         toolImage: decodeURIComponent(image),
         category: decodeURIComponent(category),
-        days: 1 // Default duration
+        days: 1
     });
 
-    // 4. Save back to LocalStorage
     localStorage.setItem("toolLinkCart", JSON.stringify(cart));
-
-    // 5. Update Badge
-    updateCartBadge();
+    
+    // UPDATE BADGES HERE
     alert("Item added to cart!");
+    if(window.updateNavbarBadges) window.updateNavbarBadges();
 };
 
 const updateCartBadge = () => {
@@ -105,8 +103,8 @@ const createToolCard = (tool) => {
     // 2. Wishlist Logic
     const isWishlisted = userWishlistIds.includes(tool.toolId);
     const heartIconClass = isWishlisted ? "fa-solid fa-heart" : "fa-regular fa-heart";
-    const btnActiveClass = isWishlisted ? "active" : ""; 
-    
+    const btnActiveClass = isWishlisted ? "active" : "";
+
     // 3. Safe string encoding for onclick arguments
     const safeName = encodeURIComponent(tool.toolName);
     const safeImage = encodeURIComponent(tool.toolImage);
@@ -133,8 +131,8 @@ const createToolCard = (tool) => {
     } else {
         // Case C: Tool is rented/maintenance -> Show Status Badge
         let badgeColor = "#d63031"; // Default red
-        if(tool.status === 'maintenance') badgeColor = "#e67e22"; // Orange
-        
+        if (tool.status === 'maintenance') badgeColor = "#e67e22"; // Orange
+
         statusBadge = `<div style="position:absolute; top:10px; left:10px; background:${badgeColor}; color:white; padding:2px 8px; font-size:12px; border-radius:4px; text-transform:uppercase; z-index: 10;">${tool.status}</div>`;
     }
 
@@ -184,24 +182,61 @@ document.addEventListener('DOMContentLoaded', () => {
 /* scripts/script.js */
 
 /* List Tool Function */
+let currentToolIdForRent = null;
 
-const rentTool = async (toolId) => {
-    // ... (keep your existing rentTool logic) ...
-    const userString = localStorage.getItem("loggedInUser");
-    if (!userString) { alert("Please login."); window.location.href = "login.html"; return; }
-    const user = JSON.parse(userString);
-    const days = prompt("Days?", "3");
-    if (!days) return;
+// --- Rent Tool (Step 1: Open Modal) ---
+const rentTool = (toolId) => {
+    // 1. Auth Check
+    const user = window.checkLogin();
+    if (!user) return;
 
-    // Simple fetch call...
+    // 2. Set State
+    currentToolIdForRent = toolId;
+
+    // 3. Open Modal
+    document.getElementById("rent-modal").classList.add("active");
+    document.getElementById("rent-days-input").focus();
+};
+
+// --- Close Modal ---
+const closeRentModal = () => {
+    document.getElementById("rent-modal").classList.remove("active");
+    currentToolIdForRent = null;
+};
+
+// --- Confirm Rent (Step 2: Submit to Server) ---
+const handleConfirmRent = async () => {
+    const days = document.getElementById("rent-days-input").value;
+    const user = JSON.parse(localStorage.getItem("loggedInUser"));
+
+    if (!days || days < 1) {
+        alert("Please enter a valid duration (at least 1 day).");
+        return;
+    }
+
     try {
         const response = await fetch("http://localhost:5000/rentTool", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ toolId: toolId, renterId: user.userId, days: days })
+            body: JSON.stringify({
+                toolId: currentToolIdForRent,
+                renterId: user.userId,
+                days: days
+            })
         });
-        if (response.ok) { alert("Success!"); window.location.href = "my-orders.html"; }
-    } catch (error) { console.error(error); }
+
+        if (response.ok) {
+            alert("Tool rented successfully! View it in 'My Orders'.");
+            closeRentModal();
+            window.location.href = "my-orders.html";
+        } else {
+            const data = await response.json();
+            alert(data.message || "Failed to rent tool.");
+        }
+    } catch (error) {
+        console.error("Rent error:", error);
+        alert("Server error.");
+    }
 };
 
 const fetchHomeTools = async () => {

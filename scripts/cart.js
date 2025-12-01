@@ -96,13 +96,13 @@ const renderSummary = (subtotal) => {
 
 // Make badge update global if needed, or just rely on page refresh
 const updateCartBadge = () => {
-    const cart = JSON.parse(localStorage.getItem("toolLinkCart")) || [];
-    const badge = document.querySelector('a[href="cart.html"] .badge');
-    if (badge) badge.innerText = cart.length;
+    if(window.updateNavbarBadges) {
+        window.updateNavbarBadges();
+    }
 };
 
-// Checkout logic (Mockup)
-document.querySelector(".btn-checkout").addEventListener("click", () => {
+/* Real Checkout Logic */
+document.querySelector(".btn-checkout").addEventListener("click", async () => {
     const userString = localStorage.getItem("loggedInUser");
     if (!userString) {
         alert("Please login to checkout.");
@@ -110,7 +110,61 @@ document.querySelector(".btn-checkout").addEventListener("click", () => {
         return;
     }
     
-    // Here you would loop through cart items and call the /rentTool API for each
-    // For simplicity in this project:
-    alert("Checkout functionality would loop through items and create rentals. \n\nFor this demo, please use 'Rent Now' on individual items.");
+    const user = JSON.parse(userString);
+    const cart = JSON.parse(localStorage.getItem("toolLinkCart")) || [];
+
+    if (cart.length === 0) {
+        alert("Your cart is empty!");
+        return;
+    }
+
+    const checkoutBtn = document.querySelector(".btn-checkout");
+    checkoutBtn.innerText = "Processing...";
+    checkoutBtn.disabled = true;
+
+    let successCount = 0;
+    let failCount = 0;
+
+    /* Loop through cart items and rent one by one */
+    for (const item of cart) {
+        try {
+            const response = await fetch("http://localhost:5000/rentTool", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    toolId: item.toolId,
+                    renterId: user.userId,
+                    days: item.days 
+                })
+            });
+
+            if (response.ok) {
+                successCount++;
+            } else {
+                failCount++;
+                console.error(`Failed to rent tool ${item.toolId}`);
+            }
+        } catch (error) {
+            failCount++;
+            console.error("Network error:", error);
+        }
+    }
+
+    /* Post-Checkout Handling */
+    checkoutBtn.innerText = "Proceed to Checkout";
+    checkoutBtn.disabled = false;
+
+    if (failCount === 0) {
+        /* Success: Clear cart and redirect */
+        alert(`Success! You have rented ${successCount} tools.`);
+        localStorage.removeItem("toolLinkCart");
+        updateCartBadge(); 
+        window.location.href = "my-orders.html";
+    } else {
+        /* Partial Success or Failure */
+        alert(`Checkout complete.\nSuccess: ${successCount}\nFailed: ${failCount}\n(Some items might be unavailable).`);
+        /* Ideally, we would remove only the successful items here, 
+           but for now, we leave the cart as is so the user can see what happened. */
+        window.location.href = "my-orders.html";
+    }
 });

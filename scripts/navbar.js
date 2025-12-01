@@ -1,19 +1,11 @@
-// --- Global Auth Guard (DRY Principle) ---
-window.checkLogin = () => {
-    const userString = localStorage.getItem("loggedInUser");
-    if (!userString) {
-        window.location.href = "login.html";
-        return null;
-    }
-    return JSON.parse(userString);
-};/* scripts/navbar.js */
+/* scripts/navbar.js */
 
 const renderNavbar = () => {
     const navbarContainer = document.getElementById("navbar-container");
     const userString = localStorage.getItem("loggedInUser");
     const user = userString ? JSON.parse(userString) : null;
 
-    /* --- 1. Dynamic Links (Middle Nav) --- */
+    /* --- 1. Dynamic Links --- */
     let navLinksHTML = `
         <a href="index.html">Home</a>
         <a href="tools.html">Tools</a>
@@ -26,7 +18,7 @@ const renderNavbar = () => {
         `;
     }
 
-    /* --- 2. Auth Section (Right Icon) --- */
+    /* --- 2. Auth Section --- */
     let authMenu = `
         <a href="login.html" class="icon-btn" title="Login / Register">
             <i class="fa-regular fa-user"></i>
@@ -53,6 +45,7 @@ const renderNavbar = () => {
     }
 
     /* --- 3. Render HTML --- */
+    // Note: Added IDs to the badges and 'display:none' by default
     navbarContainer.innerHTML = `
         <div class="navbar-content">
             <div class="logo">
@@ -70,14 +63,17 @@ const renderNavbar = () => {
                 <div class="icon-btn search-btn" onclick="openSearch()">
                     <i class="fa-solid fa-magnifying-glass"></i>
                 </div>
+                
                 <a href="wishlist.html" class="icon-btn">
                     <i class="fa-regular fa-heart"></i>
-                    <span class="badge">3</span>
+                    <span id="nav-wishlist-count" class="badge" style="display:none">0</span>
                 </a>
+                
                 <a href="cart.html" class="icon-btn">
                     <i class="fa-solid fa-bag-shopping"></i>
-                    <span class="badge">2</span>
+                    <span id="nav-cart-count" class="badge" style="display:none">0</span>
                 </a>
+                
                 ${authMenu}
             </div>
 
@@ -98,8 +94,8 @@ const renderNavbar = () => {
                 <hr>
                 <a href="#" onclick="toggleListSection(); toggleMobileMenu();">List a Tool</a>
                 <a href="#" onclick="openSearch(); toggleMobileMenu();">Search</a>
-                <a href="wishlist.html">Wishlist (3)</a>
-                <a href="cart.html">Cart (2)</a>
+                <a href="wishlist.html">Wishlist</a>
+                <a href="cart.html">Cart</a>
                 ${user ? `<a href="profile.html">Profile (${user.userName})</a>` : '<a href="login.html">Login / Register</a>'}
                 ${user ? `<a href="#" onclick="handleLogout()" style="color:#d63031;">Logout</a>` : ''}
             </div>
@@ -150,6 +146,19 @@ const renderNavbar = () => {
                 </form>
             </div>
         </div>
+
+        <div id="rent-modal" class="modal-overlay">
+            <div class="modal-container">
+                <button class="close-modal" onclick="closeRentModal()"><i class="fa-solid fa-xmark"></i></button>
+                <h3 class="form-title">Rent Tool</h3>
+                <p style="text-align:center; color:#666; margin-bottom:20px;">How long do you need this item?</p>
+                <div class="form-group">
+                    <label>Duration (Days)</label>
+                    <input type="number" id="rent-days-input" class="form-control" value="1" min="1" required>
+                </div>
+                <button class="btn-submit mt-3" onclick="handleConfirmRent()">Confirm & Pay</button>
+            </div>
+        </div>
     `;
 
     highlightActiveLink();
@@ -162,6 +171,52 @@ const renderNavbar = () => {
             if(section) section.classList.add('open');
         }, 100);
     }
+
+    // Update numbers on load
+    window.updateNavbarBadges();
+};
+
+/* --- Global Badge Updater --- */
+window.updateNavbarBadges = async () => {
+    // 1. Update Cart Badge (from LocalStorage)
+    const cart = JSON.parse(localStorage.getItem("toolLinkCart")) || [];
+    const cartBadge = document.getElementById("nav-cart-count");
+    if(cartBadge) {
+        cartBadge.innerText = cart.length;
+        // Show if > 0, else hide
+        cartBadge.style.display = cart.length > 0 ? 'flex' : 'none';
+    }
+
+    // 2. Update Wishlist Badge (from Server)
+    const userString = localStorage.getItem("loggedInUser");
+    const wishlistBadge = document.getElementById("nav-wishlist-count");
+    
+    if (userString && wishlistBadge) {
+        const user = JSON.parse(userString);
+        try {
+            const response = await fetch(`http://localhost:5000/getWishlistIds/${user.userId}`);
+            if (response.ok) {
+                const data = await response.json();
+                wishlistBadge.innerText = data.length;
+                wishlistBadge.style.display = data.length > 0 ? 'flex' : 'none';
+            }
+        } catch (error) {
+            console.error("Badge error:", error);
+        }
+    } else if (wishlistBadge) {
+        wishlistBadge.style.display = 'none';
+    }
+};
+
+/* --- Global Auth Guard --- */
+window.checkLogin = () => {
+    const userString = localStorage.getItem("loggedInUser");
+    if (!userString) {
+        alert("You must be logged in to access this.");
+        window.location.href = "login.html";
+        return null;
+    }
+    return JSON.parse(userString);
 };
 
 const toggleMobileMenu = () => {
@@ -190,13 +245,8 @@ const toggleListSection = () => {
 
 const handleListTool = async (e) => {
     e.preventDefault();
-    const userString = localStorage.getItem("loggedInUser");
-    if (!userString) {
-        alert("You must be logged in to list a tool.");
-        window.location.href = "login.html";
-        return;
-    }
-    const user = JSON.parse(userString);
+    const user = window.checkLogin();
+    if (!user) return;
 
     const toolName = document.getElementById("global-tool-name").value;
     const category = document.getElementById("global-tool-category").value;
@@ -243,7 +293,10 @@ const handleSearch = (e) => {
 };
 
 document.addEventListener('keydown', (e) => {
-    if (e.key === 'Escape') closeSearch();
+    if (e.key === 'Escape') {
+        closeSearch();
+        if(typeof closeRentModal === 'function') closeRentModal();
+    }
 });
 
 renderNavbar();

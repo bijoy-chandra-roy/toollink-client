@@ -29,7 +29,22 @@
 
         <section class="orders-section">
             <div class="container">
-                <div class="orders-list">
+                <h3 style="font-size: 20px; font-weight: 600; margin: 0 auto 20px auto; max-width: 900px;">Active
+                    Rentals</h3>
+                <div id="active-orders-list" class="orders-list">
+                </div>
+
+                <div style="height: 50px;"></div>
+
+                <h3 style="font-size: 20px; font-weight: 600; margin: 0 auto 20px auto; max-width: 900px; color: #777;">
+                    Order History</h3>
+                <div id="past-orders-list" class="orders-list">
+                </div>
+
+                <div id="empty-orders-msg" class="empty-state hidden">
+                    <div class="empty-icon"><i class="fa-solid fa-box-open"></i></div>
+                    <p>You haven't rented any tools yet.</p>
+                    <a href="tools.html" class="btn-primary-sm mt-3" style="display:inline-block;">Browse Tools</a>
                 </div>
             </div>
         </section>

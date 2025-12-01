@@ -16,25 +16,34 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 const fetchMyOrders = async (userId) => {
-    const container = document.querySelector(".orders-list");
+    const activeContainer = document.getElementById("active-orders-list");
+    const pastContainer = document.getElementById("past-orders-list");
+    const emptyMsg = document.getElementById("empty-orders-msg");
+    const headings = document.querySelectorAll("section.orders-section h3");
     
+    // 1. Reset UI
+    activeContainer.innerHTML = "";
+    pastContainer.innerHTML = "";
+    emptyMsg.classList.add("hidden");
+    headings.forEach(h => h.style.display = 'block'); // Show headings by default
+
     try {
         const response = await fetch(`http://localhost:5000/myRentals/${userId}`);
         const orders = await response.json();
 
-        container.innerHTML = "";
-
+        // 2. Handle completely empty state
         if (orders.length === 0) {
-            container.innerHTML = "<div class='empty-state'><p>You haven't rented any tools yet.</p></div>";
+            emptyMsg.classList.remove("hidden");
+            headings.forEach(h => h.style.display = 'none'); // Hide headings
             return;
         }
 
+        // 3. Sort and Render Orders
         orders.forEach(order => {
             const start = new Date(order.startDate).toLocaleDateString();
             const end = new Date(order.endDate).toLocaleDateString();
             
             let statusClass = "status-active";
-            // Logic to disable button if already returned
             let actionButton = `<button class="btn-primary-sm" onclick="handleReturnTool(${order.rentalId}, ${order.toolId})">Return Tool</button>`;
 
             if(order.status === 'completed') {
@@ -77,8 +86,22 @@ const fetchMyOrders = async (userId) => {
                     </div>
                 </div>
             `;
-            container.innerHTML += card;
+
+            // 4. Inject into correct container
+            if (order.status === 'active') {
+                activeContainer.innerHTML += card;
+            } else {
+                pastContainer.innerHTML += card;
+            }
         });
+
+        // 5. Handle empty sub-sections
+        if (activeContainer.innerHTML === "") {
+            activeContainer.innerHTML = `<p style="color:#777; font-style:italic;">No active rentals at the moment.</p>`;
+        }
+        if (pastContainer.innerHTML === "") {
+            pastContainer.innerHTML = `<p style="color:#777; font-style:italic;">No past orders found.</p>`;
+        }
 
     } catch (error) {
         console.error("Error fetching orders:", error);

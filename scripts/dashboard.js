@@ -1,4 +1,12 @@
 document.addEventListener('DOMContentLoaded', () => {
+    // ONE LINE AUTH CHECK
+    const user = window.checkLogin(); 
+    if (!user) return; // Stop if not logged in
+
+    fetchMyListings(user.userId);
+});
+
+document.addEventListener('DOMContentLoaded', () => {
     const userString = localStorage.getItem("loggedInUser");
     
     if (!userString) {

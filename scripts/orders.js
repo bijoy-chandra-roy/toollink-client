@@ -1,4 +1,11 @@
 document.addEventListener('DOMContentLoaded', () => {
+    const user = window.checkLogin();
+    if (!user) return;
+
+    fetchMyOrders(user.userId);
+});
+
+document.addEventListener('DOMContentLoaded', () => {
     const userString = localStorage.getItem("loggedInUser");
     if (!userString) {
         window.location.href = "login.html";

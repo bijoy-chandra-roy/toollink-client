@@ -34,14 +34,14 @@ const toggleWishlist = async (toolId, btn) => {
             icon.classList.remove('fa-solid');
             icon.classList.add('fa-regular');
             btn.classList.remove('active');
-            
+
             if (window.location.pathname.includes("wishlist.html")) {
                 const card = btn.closest('.listing-card');
-                if(card) card.remove();
+                if (card) card.remove();
                 const grid = document.querySelector('.listings-grid');
                 if (grid && grid.children.length === 0) grid.innerHTML = "<p>Your wishlist is empty.</p>";
             }
-            if(typeof userWishlistIds !== 'undefined') userWishlistIds = userWishlistIds.filter(id => id !== toolId);
+            if (typeof userWishlistIds !== 'undefined') userWishlistIds = userWishlistIds.filter(id => id !== toolId);
         } else {
             await fetch("http://localhost:5000/addToWishlist", {
                 method: "POST",
@@ -51,7 +51,7 @@ const toggleWishlist = async (toolId, btn) => {
             icon.classList.remove('fa-regular');
             icon.classList.add('fa-solid');
             btn.classList.add('active');
-            if(typeof userWishlistIds !== 'undefined') userWishlistIds.push(toolId);
+            if (typeof userWishlistIds !== 'undefined') userWishlistIds.push(toolId);
         }
     } catch (error) {
         console.error("Wishlist toggle error:", error);
@@ -83,7 +83,7 @@ const addToCart = (toolId, name, price, image, category) => {
 
     // 4. Save back to LocalStorage
     localStorage.setItem("toolLinkCart", JSON.stringify(cart));
-    
+
     // 5. Update Badge
     updateCartBadge();
     alert("Item added to cart!");
@@ -97,11 +97,17 @@ const updateCartBadge = () => {
 
 // --- NEW: Shared Card Generator Function ---
 const createToolCard = (tool) => {
+    // 1. Check User Identity
+    const userString = localStorage.getItem("loggedInUser");
+    const currentUser = userString ? JSON.parse(userString) : null;
+    const isOwner = currentUser && tool.ownerId === currentUser.userId;
+
+    // 2. Wishlist Logic
     const isWishlisted = userWishlistIds.includes(tool.toolId);
     const heartIconClass = isWishlisted ? "fa-solid fa-heart" : "fa-regular fa-heart";
     const btnActiveClass = isWishlisted ? "active" : ""; 
     
-    // Safe string encoding for onclick arguments
+    // 3. Safe string encoding for onclick arguments
     const safeName = encodeURIComponent(tool.toolName);
     const safeImage = encodeURIComponent(tool.toolImage);
     const safeCat = encodeURIComponent(tool.category);
@@ -109,20 +115,27 @@ const createToolCard = (tool) => {
     let statusBadge = "";
     let actionButtonsHTML = "";
 
-    // LOGIC: 
-    // 1. If available, show buttons (which slide up on hover).
-    // 2. If NOT available, show Badge and DO NOT render buttons.
+    // 4. Determine Card State
     if (tool.status === 'available') {
-        actionButtonsHTML = `
-            <div class="listing-actions">
-                <button class="btn-cart-action" onclick="addToCart(${tool.toolId}, '${safeName}', ${tool.price}, '${safeImage}', '${safeCat}')">Add to Cart</button>
-                <button class="btn-rent" onclick="rentTool(${tool.toolId})">Rent Now</button>
-            </div>
-        `;
+        if (isOwner) {
+            // Case A: User is the owner -> Show badge, hide rent buttons
+            statusBadge = `<div style="position:absolute; top:10px; left:10px; background:#222; color:white; padding:2px 8px; font-size:12px; border-radius:4px; text-transform:uppercase; z-index: 10;">Your Listing</div>`;
+            actionButtonsHTML = `<div class="listing-actions" style="transform: translateY(0); background: transparent; justify-content: center; padding-bottom: 15px;"><span style="font-size: 13px; font-weight: 600; color: #555;">You own this tool</span></div>`;
+        } else {
+            // Case B: Tool is available and user is NOT owner -> Show rent buttons
+            actionButtonsHTML = `
+                <div class="listing-actions">
+                    <button class="btn-cart-action" onclick="addToCart(${tool.toolId}, '${safeName}', ${tool.price}, '${safeImage}', '${safeCat}')">Add to Cart</button>
+                    <button class="btn-rent" onclick="rentTool(${tool.toolId})">Rent Now</button>
+                </div>
+            `;
+        }
     } else {
-        // Tool is rented/maintenance
-        statusBadge = `<div style="position:absolute; top:10px; left:10px; background:#d63031; color:white; padding:2px 8px; font-size:12px; border-radius:4px; text-transform:uppercase; z-index: 10;">${tool.status}</div>`;
-        // actionButtonsHTML remains empty string ""
+        // Case C: Tool is rented/maintenance -> Show Status Badge
+        let badgeColor = "#d63031"; // Default red
+        if(tool.status === 'maintenance') badgeColor = "#e67e22"; // Orange
+        
+        statusBadge = `<div style="position:absolute; top:10px; left:10px; background:${badgeColor}; color:white; padding:2px 8px; font-size:12px; border-radius:4px; text-transform:uppercase; z-index: 10;">${tool.status}</div>`;
     }
 
     return `
@@ -157,7 +170,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const section = document.querySelector('.list-tool-section');
         if (section) setTimeout(() => section.classList.add('open'), 100);
     }
-    
+
     // Initialize Cart Badge
     updateCartBadge();
 
@@ -168,15 +181,9 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 // --- MISSING FUNCTIONS FROM PREVIOUS STEP RE-ADDED FOR SAFETY ---
-const handleListTool = async (e) => {
-    e.preventDefault();
-    const userString = localStorage.getItem("loggedInUser");
-    if (!userString) { alert("Login required"); window.location.href = "login.html"; return; }
-    const user = JSON.parse(userString);
-    // ... (rest of handleListTool logic from previous code) ...
-    // If you need me to provide the full handleListTool again, let me know.
-    // Assuming you kept it from the file you pasted.
-};
+/* scripts/script.js */
+
+/* List Tool Function */
 
 const rentTool = async (toolId) => {
     // ... (keep your existing rentTool logic) ...
@@ -185,9 +192,9 @@ const rentTool = async (toolId) => {
     const user = JSON.parse(userString);
     const days = prompt("Days?", "3");
     if (!days) return;
-    
+
     // Simple fetch call...
-     try {
+    try {
         const response = await fetch("http://localhost:5000/rentTool", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
@@ -205,5 +212,5 @@ const fetchHomeTools = async () => {
     const response = await fetch("http://localhost:5000/getTools");
     const tools = await response.json();
     container.innerHTML = "";
-    tools.slice(0,4).forEach(tool => container.innerHTML += createToolCard(tool));
+    tools.slice(0, 4).forEach(tool => container.innerHTML += createToolCard(tool));
 };

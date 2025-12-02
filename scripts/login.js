@@ -14,14 +14,14 @@ const switchTab = (tab) => {
         tabs[0].classList.remove('active');
         tabs[1].classList.add('active');
     }
-    
+
     document.getElementById('login-error').classList.add('hidden');
     document.getElementById('reg-error').classList.add('hidden');
 };
 
 const handleLogin = async (e) => {
     e.preventDefault();
-    
+
     const userIdInput = document.getElementById("login-userid").value;
     const passwordInput = document.getElementById("login-password").value;
     const errorElement = document.getElementById("login-error");
@@ -67,11 +67,11 @@ const handleRegister = async (e) => {
         const response = await fetch("http://localhost:5000/register", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ 
-                userId: userIdInput, 
-                userName: userNameInput, 
+            body: JSON.stringify({
+                userId: userIdInput,
+                userName: userNameInput,
                 userPassword: passwordInput,
-                userImage: finalImage 
+                userImage: finalImage
             })
         });
 
@@ -97,5 +97,21 @@ const handleRegister = async (e) => {
         console.error("Registration Error:", error);
         errorElement.innerText = "Server connection failed.";
         errorElement.classList.remove("hidden");
+    }
+};
+
+/* Password Visibility Toggle */
+const togglePassword = (inputId, btn) => {
+    const input = document.getElementById(inputId);
+    const icon = btn.querySelector("i");
+
+    if (input.getAttribute("type") === "password") {
+        input.setAttribute("type", "text");
+        icon.classList.remove("fa-eye");
+        icon.classList.add("fa-eye-slash");
+    } else {
+        input.setAttribute("type", "password");
+        icon.classList.remove("fa-eye-slash");
+        icon.classList.add("fa-eye");
     }
 };

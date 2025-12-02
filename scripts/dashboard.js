@@ -1,41 +1,36 @@
+/* Section: Dashboard Logic */
 document.addEventListener('DOMContentLoaded', () => {
-    // ONE LINE AUTH CHECK
-    const user = window.checkLogin(); 
-    if (!user) return; // Stop if not logged in
+    const user = window.checkLogin();
+    if (!user) return;
 
-    fetchMyListings(user.userId);
+    window.fetchMyListings(user.userId);
 });
 
 document.addEventListener('DOMContentLoaded', () => {
     const userString = localStorage.getItem("loggedInUser");
     
     if (!userString) {
-        alert("Please login to view your dashboard.");
         window.location.href = "login.html";
         return;
     }
 
     const user = JSON.parse(userString);
-    fetchMyListings(user.userId);
+    window.fetchMyListings(user.userId);
 });
 
-// We store the fetched tools here so we can access data for the modal easily
 let myToolsData = [];
 
-const fetchMyListings = async (userId) => {
+window.fetchMyListings = async (userId) => {
     const container = document.querySelector(".dashboard-list");
     
     try {
-        // 1. Fetch Tools
         const toolsResponse = await fetch(`http://localhost:5000/getMyListings/${userId}`);
         const tools = await toolsResponse.json();
-        myToolsData = tools; // Save for later use
+        myToolsData = tools; 
 
-        // 2. Fetch Stats
         const statsResponse = await fetch(`http://localhost:5000/getLenderStats/${userId}`);
         const stats = await statsResponse.json();
 
-        // Update Stats UI
         const statValues = document.querySelectorAll('.stat-value');
         if(statValues.length >= 3) {
             statValues[0].innerText = `$${stats.totalEarnings.toFixed(2)}`;
@@ -87,79 +82,77 @@ const fetchMyListings = async (userId) => {
     }
 };
 
-/* --- Edit Functionality --- */
-
-const openEditModal = (index) => {
+/* Section: Edit Functionality */
+window.openEditModal = (index) => {
     const tool = myToolsData[index];
     
-    // Pre-fill the form
     document.getElementById("edit-tool-id").value = tool.toolId;
     document.getElementById("edit-name").value = tool.toolName;
     document.getElementById("edit-category").value = tool.category;
     document.getElementById("edit-price").value = tool.price;
-    // REMOVED: document.getElementById("edit-status").value = tool.status;
 
-    // Show Modal
     document.getElementById("edit-modal").classList.add("active");
 };
 
-const closeEditModal = () => {
+window.closeEditModal = () => {
     document.getElementById("edit-modal").classList.remove("active");
 };
 
-const handleUpdateTool = async (e) => {
+window.handleUpdateTool = async (e) => {
     e.preventDefault();
-
+    
     const toolId = document.getElementById("edit-tool-id").value;
     const toolName = document.getElementById("edit-name").value;
     const category = document.getElementById("edit-category").value;
     const price = document.getElementById("edit-price").value;
-    // REMOVED: const status = document.getElementById("edit-status").value;
 
     try {
         const response = await fetch("http://localhost:5000/updateTool", {
             method: "PUT",
             headers: { "Content-Type": "application/json" },
-            // REMOVED status from body
             body: JSON.stringify({ toolId, toolName, category, price })
         });
 
         if (response.ok) {
-            alert("Tool updated successfully!");
-            closeEditModal();
-            const user = JSON.parse(localStorage.getItem("loggedInUser"));
-            fetchMyListings(user.userId);
+            window.showModal("Success", "Tool updated successfully!", () => {
+                window.closeEditModal();
+                const user = JSON.parse(localStorage.getItem("loggedInUser"));
+                window.fetchMyListings(user.userId);
+            });
         } else {
-            alert("Failed to update tool.");
+            window.showModal("Error", "Failed to update tool.");
         }
     } catch (error) {
         console.error("Error updating tool:", error);
     }
 };
 
-/* --- Delete Functionality --- */
-
-const deleteTool = async (toolId) => {
-    if(!confirm("Are you sure you want to delete this listing?")) return;
-
+/* Section: Delete Functionality */
+window.deleteTool = async (toolId) => {
     try {
         const response = await fetch(`http://localhost:5000/deleteTool/${toolId}`, {
             method: "DELETE"
         });
 
+        // We parse the response to get the specific message from the server
+        const data = await response.json();
+
         if (response.ok) {
+            // Success: Remove from UI
             const item = document.getElementById(`tool-${toolId}`);
             if (item) item.remove();
             
-            // Update stats locally for instant feedback
+            // Update the "Active Listings" counter immediately
             const countElement = document.querySelectorAll('.stat-value')[1]; 
             if(countElement) countElement.innerText = parseInt(countElement.innerText) - 1;
             
-            alert("Tool deleted successfully.");
+            window.showModal("Deleted", "Tool deleted successfully.");
         } else {
-            alert("Failed to delete tool.");
+            // Error: Show the message (e.g., "Currently rented out")
+            window.showModal("Action Blocked", data.message || "Failed to delete tool.");
         }
     } catch (error) {
         console.error("Error deleting tool:", error);
+        window.showModal("Error", "Server connection failed.");
     }
 };

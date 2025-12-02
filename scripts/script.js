@@ -1,7 +1,8 @@
-// Global variable to store wishlist IDs
+/* Section: Global Variables */
 let userWishlistIds = [];
+let currentToolIdForRent = null;
 
-// --- Helper: Fetch User's Wishlist IDs ---
+/* Section: Wishlist Logic */
 const fetchWishlistIds = async () => {
     const userString = localStorage.getItem("loggedInUser");
     if (!userString) return;
@@ -16,8 +17,7 @@ const fetchWishlistIds = async () => {
     }
 };
 
-// --- Shared: Toggle Wishlist Function ---
-const toggleWishlist = async (toolId, btn) => {
+window.toggleWishlist = async (toolId, btn) => {
     const user = window.checkLogin();
     if (!user) return;
 
@@ -31,11 +31,9 @@ const toggleWishlist = async (toolId, btn) => {
             icon.classList.add('fa-regular');
             btn.classList.remove('active');
             
-            // Handle removal if on wishlist page
             if (window.location.pathname.includes("wishlist.html")) {
                 const card = btn.closest('.listing-card');
                 if(card) card.remove();
-                // Check if empty
                 if(document.querySelector('.listings-grid').children.length === 0) {
                     document.querySelector('.listings-grid').innerHTML = "<p>Your wishlist is empty.</p>";
                 }
@@ -52,22 +50,19 @@ const toggleWishlist = async (toolId, btn) => {
             btn.classList.add('active');
             userWishlistIds.push(toolId);
         }
-        
-        // UPDATE BADGES HERE
         if(window.updateNavbarBadges) window.updateNavbarBadges();
-
     } catch (error) {
-        console.error("Wishlist toggle error:", error);
+        console.error("Wishlist error:", error);
     }
 };
 
-// --- Shared: Add to Cart Function ---
-const addToCart = (toolId, name, price, image, category) => {
+/* Section: Cart Logic */
+window.addToCart = (toolId, name, price, image, category) => {
     let cart = JSON.parse(localStorage.getItem("toolLinkCart")) || [];
     const existingItem = cart.find(item => item.toolId === toolId);
 
     if (existingItem) {
-        alert("This item is already in your cart!");
+        window.showModal("Cart", "This item is already in your cart!");
         return;
     }
 
@@ -81,31 +76,88 @@ const addToCart = (toolId, name, price, image, category) => {
     });
 
     localStorage.setItem("toolLinkCart", JSON.stringify(cart));
-    
-    // UPDATE BADGES HERE
-    alert("Item added to cart!");
+    window.showModal("Added", "Item added to cart!"); 
     if(window.updateNavbarBadges) window.updateNavbarBadges();
 };
 
-const updateCartBadge = () => {
-    const cart = JSON.parse(localStorage.getItem("toolLinkCart")) || [];
-    const badge = document.querySelector('a[href="cart.html"] .badge');
-    if (badge) badge.innerText = cart.length;
+/* Section: Rent Now Logic */
+window.rentTool = (toolId) => {
+    const user = window.checkLogin();
+    if (!user) return;
+
+    currentToolIdForRent = toolId;
+    document.getElementById("rent-modal").classList.add("active");
+    document.getElementById("rent-days-input").focus();
 };
 
-// --- NEW: Shared Card Generator Function ---
-const createToolCard = (tool) => {
-    // 1. Check User Identity
+window.closeRentModal = () => {
+    document.getElementById("rent-modal").classList.remove("active");
+    currentToolIdForRent = null;
+};
+
+window.handleConfirmRent = async (btn) => {
+    const daysInput = document.getElementById("rent-days-input");
+    const user = JSON.parse(localStorage.getItem("loggedInUser"));
+    const days = daysInput.value;
+
+    if (btn.disabled) return; 
+
+    if (!days || days < 1) {
+        window.showModal("Error", "Please enter a valid duration.");
+        return;
+    }
+
+    btn.disabled = true;
+    const originalText = btn.innerText;
+    btn.innerText = "Processing...";
+    btn.style.opacity = "0.7";
+
+    try {
+        const response = await fetch("http://localhost:5000/rentTool", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ 
+                toolId: currentToolIdForRent, 
+                renterId: user.userId, 
+                days: days 
+            })
+        });
+
+        const data = await response.json();
+
+        if (response.ok) {
+            window.closeRentModal();
+            window.showModal("Success", "Tool rented successfully!", () => {
+                window.location.href = "my-orders.html";
+            });
+        } else {
+            window.showModal("Error", data.message || "Failed to rent tool.");
+            resetRentButton(btn, originalText);
+        }
+    } catch (error) {
+        console.error("Rent error:", error);
+        window.showModal("Error", "Server connection failed.");
+        resetRentButton(btn, originalText);
+    }
+};
+
+const resetRentButton = (btn, originalText) => {
+    if(!btn) return;
+    btn.disabled = false;
+    btn.innerText = originalText || "Confirm & Pay";
+    btn.style.opacity = "1";
+};
+
+/* Section: Card Generator */
+window.createToolCard = (tool) => {
     const userString = localStorage.getItem("loggedInUser");
     const currentUser = userString ? JSON.parse(userString) : null;
     const isOwner = currentUser && tool.ownerId === currentUser.userId;
-
-    // 2. Wishlist Logic
+    
     const isWishlisted = userWishlistIds.includes(tool.toolId);
     const heartIconClass = isWishlisted ? "fa-solid fa-heart" : "fa-regular fa-heart";
     const btnActiveClass = isWishlisted ? "active" : "";
-
-    // 3. Safe string encoding for onclick arguments
+    
     const safeName = encodeURIComponent(tool.toolName);
     const safeImage = encodeURIComponent(tool.toolImage);
     const safeCat = encodeURIComponent(tool.category);
@@ -113,14 +165,11 @@ const createToolCard = (tool) => {
     let statusBadge = "";
     let actionButtonsHTML = "";
 
-    // 4. Determine Card State
     if (tool.status === 'available') {
         if (isOwner) {
-            // Case A: User is the owner -> Show badge, hide rent buttons
             statusBadge = `<div style="position:absolute; top:10px; left:10px; background:#222; color:white; padding:2px 8px; font-size:12px; border-radius:4px; text-transform:uppercase; z-index: 10;">Your Listing</div>`;
             actionButtonsHTML = `<div class="listing-actions" style="transform: translateY(0); background: transparent; justify-content: center; padding-bottom: 15px;"><span style="font-size: 13px; font-weight: 600; color: #555;">You own this tool</span></div>`;
         } else {
-            // Case B: Tool is available and user is NOT owner -> Show rent buttons
             actionButtonsHTML = `
                 <div class="listing-actions">
                     <button class="btn-cart-action" onclick="addToCart(${tool.toolId}, '${safeName}', ${tool.price}, '${safeImage}', '${safeCat}')">Add to Cart</button>
@@ -129,10 +178,8 @@ const createToolCard = (tool) => {
             `;
         }
     } else {
-        // Case C: Tool is rented/maintenance -> Show Status Badge
-        let badgeColor = "#d63031"; // Default red
-        if (tool.status === 'maintenance') badgeColor = "#e67e22"; // Orange
-
+        let badgeColor = "#d63031"; 
+        if(tool.status === 'maintenance') badgeColor = "#e67e22"; 
         statusBadge = `<div style="position:absolute; top:10px; left:10px; background:${badgeColor}; color:white; padding:2px 8px; font-size:12px; border-radius:4px; text-transform:uppercase; z-index: 10;">${tool.status}</div>`;
     }
 
@@ -141,11 +188,9 @@ const createToolCard = (tool) => {
             <div class="listing-image">
                 ${statusBadge}
                 <img src="${tool.toolImage}" alt="${tool.toolName}" onerror="this.src='./assets/vecteezy_cordless-electric-drill-with-battery-pack-ideal-for-various_69716390.jpeg'">
-                
                 <button class="wishlist-btn ${btnActiveClass}" onclick="toggleWishlist(${tool.toolId}, this)">
                     <i class="${heartIconClass}"></i>
                 </button>
-                
                 ${actionButtonsHTML}
             </div>
             <div class="listing-info">
@@ -157,95 +202,21 @@ const createToolCard = (tool) => {
     `;
 };
 
-// ... (Keep fetchHomeTools, handleListTool, rentTool as they were) ...
-// Only paste the surrounding code if you deleted it. 
-// Ensure fetchHomeTools uses createToolCard inside.
-
-// --- Initialize ---
-document.addEventListener('DOMContentLoaded', () => {
-    const urlParams = new URLSearchParams(window.location.search);
-    if (urlParams.get('action') === 'list-tool') {
-        const section = document.querySelector('.list-tool-section');
-        if (section) setTimeout(() => section.classList.add('open'), 100);
-    }
-
-    // Initialize Cart Badge
-    updateCartBadge();
-
-    // Only fetch home tools if we are on the home page
-    if (document.querySelector(".recent-listings-section")) {
-        fetchHomeTools();
-    }
-});
-
-// --- MISSING FUNCTIONS FROM PREVIOUS STEP RE-ADDED FOR SAFETY ---
-/* scripts/script.js */
-
-/* List Tool Function */
-let currentToolIdForRent = null;
-
-// --- Rent Tool (Step 1: Open Modal) ---
-const rentTool = (toolId) => {
-    // 1. Auth Check
-    const user = window.checkLogin();
-    if (!user) return;
-
-    // 2. Set State
-    currentToolIdForRent = toolId;
-
-    // 3. Open Modal
-    document.getElementById("rent-modal").classList.add("active");
-    document.getElementById("rent-days-input").focus();
-};
-
-// --- Close Modal ---
-const closeRentModal = () => {
-    document.getElementById("rent-modal").classList.remove("active");
-    currentToolIdForRent = null;
-};
-
-// --- Confirm Rent (Step 2: Submit to Server) ---
-const handleConfirmRent = async () => {
-    const days = document.getElementById("rent-days-input").value;
-    const user = JSON.parse(localStorage.getItem("loggedInUser"));
-
-    if (!days || days < 1) {
-        alert("Please enter a valid duration (at least 1 day).");
-        return;
-    }
-
-    try {
-        const response = await fetch("http://localhost:5000/rentTool", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-                toolId: currentToolIdForRent,
-                renterId: user.userId,
-                days: days
-            })
-        });
-
-        if (response.ok) {
-            alert("Tool rented successfully! View it in 'My Orders'.");
-            closeRentModal();
-            window.location.href = "my-orders.html";
-        } else {
-            const data = await response.json();
-            alert(data.message || "Failed to rent tool.");
-        }
-    } catch (error) {
-        console.error("Rent error:", error);
-        alert("Server error.");
-    }
-};
-
-const fetchHomeTools = async () => {
-    // ... (keep your logic, ensuring it uses createToolCard) ...
+/* Section: Homepage Logic */
+window.fetchHomeTools = async () => {
     const container = document.querySelector(".listings-grid");
     if (!container) return;
     await fetchWishlistIds();
-    const response = await fetch("http://localhost:5000/getTools");
-    const tools = await response.json();
-    container.innerHTML = "";
-    tools.slice(0, 4).forEach(tool => container.innerHTML += createToolCard(tool));
+    try {
+        const response = await fetch("http://localhost:5000/getTools");
+        const tools = await response.json();
+        container.innerHTML = "";
+        tools.slice(0, 4).forEach(tool => container.innerHTML += window.createToolCard(tool));
+    } catch (error) { console.error("Error loading home tools:", error); }
 };
+
+/* Section: Initialize */
+document.addEventListener('DOMContentLoaded', () => {
+    if (document.querySelector(".recent-listings-section")) window.fetchHomeTools();
+    if(window.updateNavbarBadges) window.updateNavbarBadges();
+});

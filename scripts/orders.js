@@ -110,8 +110,6 @@ const fetchMyOrders = async (userId) => {
 
 // --- New Function to Handle Return ---
 const handleReturnTool = async (rentalId, toolId) => {
-    if(!confirm("Are you sure you want to return this tool?")) return;
-
     try {
         const response = await fetch("http://localhost:5000/returnTool", {
             method: "POST",
@@ -120,11 +118,12 @@ const handleReturnTool = async (rentalId, toolId) => {
         });
 
         if (response.ok) {
-            alert("Tool returned successfully!");
-            const user = JSON.parse(localStorage.getItem("loggedInUser"));
-            fetchMyOrders(user.userId); // Refresh list
+            window.showModal("Success", "Tool returned successfully!", () => {
+                const user = JSON.parse(localStorage.getItem("loggedInUser"));
+                fetchMyOrders(user.userId);
+            });
         } else {
-            alert("Failed to return tool.");
+            window.showModal("Error", "Failed to return tool.");
         }
     } catch (error) {
         console.error("Error returning tool:", error);

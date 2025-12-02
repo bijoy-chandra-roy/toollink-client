@@ -26,10 +26,15 @@ const renderNavbar = () => {
     `;
 
     if (user) {
+        // NEW: Check if user has an image, otherwise use default icon
+        const userImg = (user.userImage && user.userImage.trim() !== "") 
+            ? `<img src="${user.userImage}" class="nav-user-img" alt="Profile" onerror="this.src='./assets/user-placeholder-image.jpg'">` 
+            : `<i class="fa-regular fa-user"></i>`;
+
         authMenu = `
             <div class="user-dropdown">
-                <a href="#" class="icon-btn" onclick="return false;">
-                    <i class="fa-regular fa-user"></i>
+                <a href="#" class="icon-btn" onclick="return false;" style="gap: 8px;">
+                    ${userImg}
                     <span class="nav-user-name">${user.userName.split(' ')[0]}</span>
                 </a>
                 <div class="dropdown-content">
@@ -45,7 +50,6 @@ const renderNavbar = () => {
     }
 
     /* --- 3. Render HTML --- */
-    // Note: Added IDs to the badges and 'display:none' by default
     navbarContainer.innerHTML = `
         <div class="navbar-content">
             <div class="logo">
@@ -156,14 +160,22 @@ const renderNavbar = () => {
                     <label>Duration (Days)</label>
                     <input type="number" id="rent-days-input" class="form-control" value="1" min="1" required>
                 </div>
-                <button class="btn-submit mt-3" onclick="handleConfirmRent()">Confirm & Pay</button>
+                <button class="btn-submit mt-3" onclick="handleConfirmRent(this)">Confirm & Pay</button>
+            </div>
+        </div>
+
+        <div id="message-modal" class="modal-overlay">
+            <div class="modal-container" style="text-align: center;">
+                <button class="close-modal" onclick="closeMessageModal()"><i class="fa-solid fa-xmark"></i></button>
+                <h3 id="msg-modal-title" class="form-title" style="margin-bottom: 10px;">Message</h3>
+                <p id="msg-modal-body" style="color:#555; margin-bottom: 25px;"></p>
+                <button id="msg-modal-btn" class="btn-submit" onclick="closeMessageModal()">OK</button>
             </div>
         </div>
     `;
 
     highlightActiveLink();
     
-    // Auto-open list tool if URL param exists
     const urlParams = new URLSearchParams(window.location.search);
     if (urlParams.get('action') === 'list-tool') {
         setTimeout(() => {
@@ -172,22 +184,18 @@ const renderNavbar = () => {
         }, 100);
     }
 
-    // Update numbers on load
     window.updateNavbarBadges();
 };
 
-/* --- Global Badge Updater --- */
+/* --- Global Logic (Same as before) --- */
 window.updateNavbarBadges = async () => {
-    // 1. Update Cart Badge (from LocalStorage)
     const cart = JSON.parse(localStorage.getItem("toolLinkCart")) || [];
     const cartBadge = document.getElementById("nav-cart-count");
     if(cartBadge) {
         cartBadge.innerText = cart.length;
-        // Show if > 0, else hide
         cartBadge.style.display = cart.length > 0 ? 'flex' : 'none';
     }
 
-    // 2. Update Wishlist Badge (from Server)
     const userString = localStorage.getItem("loggedInUser");
     const wishlistBadge = document.getElementById("nav-wishlist-count");
     
@@ -208,23 +216,40 @@ window.updateNavbarBadges = async () => {
     }
 };
 
-/* --- Global Auth Guard --- */
 window.checkLogin = () => {
     const userString = localStorage.getItem("loggedInUser");
     if (!userString) {
-        alert("You must be logged in to access this.");
-        window.location.href = "login.html";
+        window.showModal("Access Denied", "You must be logged in to access this.", () => {
+            window.location.href = "login.html";
+        });
         return null;
     }
     return JSON.parse(userString);
 };
 
-const toggleMobileMenu = () => {
+let onMessageModalClose = null;
+
+window.showModal = (title, message, onCloseCallback) => {
+    document.getElementById("msg-modal-title").innerText = title;
+    document.getElementById("msg-modal-body").innerText = message;
+    onMessageModalClose = onCloseCallback; 
+    document.getElementById("message-modal").classList.add("active");
+};
+
+window.closeMessageModal = () => {
+    document.getElementById("message-modal").classList.remove("active");
+    if (onMessageModalClose) {
+        onMessageModalClose();
+        onMessageModalClose = null; 
+    }
+};
+
+window.toggleMobileMenu = () => {
     const menu = document.getElementById("mobile-menu");
     menu.classList.toggle("active");
 };
 
-const handleLogout = () => {
+window.handleLogout = () => {
     localStorage.removeItem("loggedInUser");
     window.location.href = "index.html";
 };
@@ -238,12 +263,12 @@ const highlightActiveLink = () => {
     });
 };
 
-const toggleListSection = () => {
+window.toggleListSection = () => {
     const section = document.querySelector('.list-tool-section');
     if (section) section.classList.toggle('open');
 };
 
-const handleListTool = async (e) => {
+window.handleListTool = async (e) => {
     e.preventDefault();
     const user = window.checkLogin();
     if (!user) return;
@@ -264,29 +289,33 @@ const handleListTool = async (e) => {
         });
 
         if (response.ok) {
-            alert("Tool listed successfully!");
-            e.target.reset();
-            toggleListSection();
-            if (typeof fetchHomeTools === 'function') fetchHomeTools();
-            else if (typeof fetchMyListings === 'function') fetchMyListings(user.userId);
+            window.showModal("Success", "Tool listed successfully!", () => {
+                e.target.reset();
+                window.toggleListSection();
+                if (window.fetchHomeTools) {
+                    window.fetchHomeTools();
+                } else if (window.fetchMyListings) {
+                    window.fetchMyListings(user.userId);
+                }
+            });
         } else {
-            alert("Failed to list tool.");
+            window.showModal("Error", "Failed to list tool.");
         }
     } catch (error) {
         console.error("Error:", error);
     }
 };
 
-const openSearch = () => {
+window.openSearch = () => {
     document.getElementById("search-overlay").classList.add("active");
     document.getElementById("search-input").focus();
 };
 
-const closeSearch = () => {
+window.closeSearch = () => {
     document.getElementById("search-overlay").classList.remove("active");
 };
 
-const handleSearch = (e) => {
+window.handleSearch = (e) => {
     e.preventDefault();
     const query = document.getElementById("search-input").value;
     if (query.trim()) window.location.href = `tools.html?search=${encodeURIComponent(query)}`;
@@ -294,8 +323,9 @@ const handleSearch = (e) => {
 
 document.addEventListener('keydown', (e) => {
     if (e.key === 'Escape') {
-        closeSearch();
-        if(typeof closeRentModal === 'function') closeRentModal();
+        window.closeSearch();
+        if(window.closeRentModal) window.closeRentModal();
+        if(window.closeMessageModal) window.closeMessageModal();
     }
 });
 

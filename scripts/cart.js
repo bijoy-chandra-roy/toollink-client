@@ -12,7 +12,7 @@ document.addEventListener('DOMContentLoaded', () => {
 const loadCart = () => {
     const container = document.querySelector(".cart-items");
     const summaryContainer = document.querySelector(".cart-summary");
-    
+
     // Get cart from LocalStorage
     let cart = JSON.parse(localStorage.getItem("toolLinkCart")) || [];
 
@@ -66,10 +66,10 @@ const loadCart = () => {
 
 const updateDays = (index, change) => {
     let cart = JSON.parse(localStorage.getItem("toolLinkCart")) || [];
-    
+
     let newDays = cart[index].days + change;
     if (newDays < 1) newDays = 1;
-    
+
     cart[index].days = newDays;
     localStorage.setItem("toolLinkCart", JSON.stringify(cart));
     loadCart(); // Re-render
@@ -96,7 +96,7 @@ const renderSummary = (subtotal) => {
 
 // Make badge update global if needed, or just rely on page refresh
 const updateCartBadge = () => {
-    if(window.updateNavbarBadges) {
+    if (window.updateNavbarBadges) {
         window.updateNavbarBadges();
     }
 };
@@ -109,7 +109,7 @@ document.querySelector(".btn-checkout").addEventListener("click", async () => {
         window.location.href = "login.html";
         return;
     }
-    
+
     const user = JSON.parse(userString);
     const cart = JSON.parse(localStorage.getItem("toolLinkCart")) || [];
 
@@ -134,7 +134,7 @@ document.querySelector(".btn-checkout").addEventListener("click", async () => {
                 body: JSON.stringify({
                     toolId: item.toolId,
                     renterId: user.userId,
-                    days: item.days 
+                    days: item.days
                 })
             });
 
@@ -155,16 +155,14 @@ document.querySelector(".btn-checkout").addEventListener("click", async () => {
     checkoutBtn.disabled = false;
 
     if (failCount === 0) {
-        /* Success: Clear cart and redirect */
-        alert(`Success! You have rented ${successCount} tools.`);
         localStorage.removeItem("toolLinkCart");
-        updateCartBadge(); 
-        window.location.href = "my-orders.html";
+        updateCartBadge();
+        window.showModal("Order Complete", `Success! You have rented ${successCount} tools.`, () => {
+            window.location.href = "my-orders.html";
+        });
     } else {
-        /* Partial Success or Failure */
-        alert(`Checkout complete.\nSuccess: ${successCount}\nFailed: ${failCount}\n(Some items might be unavailable).`);
-        /* Ideally, we would remove only the successful items here, 
-           but for now, we leave the cart as is so the user can see what happened. */
-        window.location.href = "my-orders.html";
+        window.showModal("Order Status", `Checkout complete.\nSuccess: ${successCount}\nFailed: ${failCount}`, () => {
+            window.location.href = "my-orders.html";
+        });
     }
 });

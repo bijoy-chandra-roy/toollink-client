@@ -36,11 +36,15 @@
                     </div>
                     <div class="form-group">
                         <label>Password</label>
-                        <input type="password" id="login-password" class="form-control" placeholder="Enter your password" required>
+                        <div class="password-wrapper">
+                            <input type="password" id="login-password" class="form-control" placeholder="Enter your password" required>
+                            <button type="button" class="toggle-password-btn" onclick="togglePassword('login-password', this)">
+                                <i class="fa-regular fa-eye"></i>
+                            </button>
+                        </div>
                     </div>
                     <div id="login-error" class="error-message hidden">Invalid User ID or Password</div>
                     <button type="submit" class="btn-submit">Log In</button>
-                    <p class="auth-note">Demo User ID: <strong>user1</strong> | Pass: <strong>1234</strong></p>
                 </form>
 
                 <form id="register-form" class="auth-form" onsubmit="handleRegister(event)">
@@ -59,7 +63,12 @@
                     </div>
                     <div class="form-group">
                         <label>Password</label>
-                        <input type="password" id="reg-password" class="form-control" placeholder="Create a password" required>
+                        <div class="password-wrapper">
+                            <input type="password" id="reg-password" class="form-control" placeholder="Create a password" required>
+                            <button type="button" class="toggle-password-btn" onclick="togglePassword('reg-password', this)">
+                                <i class="fa-regular fa-eye"></i>
+                            </button>
+                        </div>
                     </div>
                     <div id="reg-error" class="error-message hidden">User ID already exists</div>
                     <button type="submit" class="btn-submit">Register</button>
@@ -67,7 +76,6 @@
             </div>
         </section>
     </main>
-
     <footer id="footer-container"></footer>
 
     <script src="./scripts/navbar.js"></script>

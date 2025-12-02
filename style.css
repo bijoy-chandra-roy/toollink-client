@@ -25,6 +25,24 @@ body {
   justify-content: space-between;
   align-items: center;
   width: 100%;
+  position: relative; /* <--- Added this to allow absolute positioning inside */
+}
+
+/* NEW: Forces the middle links to be exactly in the center of the screen */
+.nav-links.desktop-nav {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+/* NEW: Styles for the navbar profile picture */
+.nav-user-img {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 1px solid #e5e5e5;
+  display: block;
 }
 
 .logo a {
@@ -1066,6 +1084,7 @@ footer {
   font-size: 13px;
   font-weight: 500;
   text-transform: uppercase;
+  text-decoration: none;
   cursor: pointer;
   transition: all 0.3s ease;
 }
@@ -2195,4 +2214,35 @@ footer {
     .stat-card {
         margin-bottom: 10px;
     }
+}
+
+/* Password Toggle Styles */
+.password-wrapper {
+  position: relative;
+  width: 100%;
+}
+
+.password-wrapper input {
+  padding-right: 45px; /* Prevents text from overlapping the icon */
+}
+
+.toggle-password-btn {
+  position: absolute;
+  right: 15px;
+  top: 50%;
+  transform: translateY(-50%);
+  border: none;
+  background: none;
+  cursor: pointer;
+  color: #888;
+  font-size: 16px;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 5;
+}
+
+.toggle-password-btn:hover {
+  color: #222;
 }

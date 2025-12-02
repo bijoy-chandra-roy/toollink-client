@@ -156,6 +156,11 @@ window.createToolCard = (tool) => {
     
     // 1. Check ownership
     const isOwner = currentUser && tool.ownerId === currentUser.userId;
+
+    // FIX: Changed tool.userImage to tool.ownerImage to match the backend alias
+    const ownerName = tool.ownerName || "ToolLink User";
+    const ownerImage = tool.ownerImage || "./assets/user-placeholder-image.jpg";
+    const ownerNickname = ownerName.split(' ')[0];
     
     const isWishlisted = userWishlistIds.includes(tool.toolId);
     const heartIconClass = isWishlisted ? "fa-solid fa-heart" : "fa-regular fa-heart";
@@ -199,6 +204,14 @@ window.createToolCard = (tool) => {
         </button>
     `;
 
+    // NEW: Owner Info HTML Block
+    const ownerInfoHTML = `
+        <div class="listing-owner-info">
+            <img src="${ownerImage}" alt="${ownerName}" class="owner-avatar" onerror="this.src='./assets/user-placeholder-image.jpg'">
+            <span class="owner-name">From: ${ownerNickname}</span>
+        </div>
+    `;
+
     return `
         <div class="listing-card" id="card-${tool.toolId}">
             <div class="listing-image">
@@ -210,6 +223,7 @@ window.createToolCard = (tool) => {
             <div class="listing-info">
                 <p class="listing-category">${tool.category}</p>
                 <h3 class="listing-title"><a href="tools.html?search=${safeName}">${tool.toolName}</a></h3>
+                ${ownerInfoHTML}
                 <div class="listing-price">$${tool.price} / day</div>
             </div>
         </div>

@@ -37,7 +37,6 @@ const handleLogin = async (e) => {
 
         if (data.length > 0) {
             errorElement.classList.add("hidden");
-            // We still save to localStorage to keep the user logged in across pages
             localStorage.setItem("loggedInUser", JSON.stringify(data[0]));
             window.location.href = "index.html";
         } else {

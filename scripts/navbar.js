@@ -26,7 +26,6 @@ const renderNavbar = () => {
     `;
 
     if (user) {
-        // NEW: Check if user has an image, otherwise use default icon
         const userImg = (user.userImage && user.userImage.trim() !== "") 
             ? `<img src="${user.userImage}" class="nav-user-img" alt="Profile" onerror="this.src='./assets/user-placeholder-image.jpg'">` 
             : `<i class="fa-regular fa-user"></i>`;
@@ -49,7 +48,6 @@ const renderNavbar = () => {
         `;
     }
 
-    /* --- 3. Render HTML --- */
     navbarContainer.innerHTML = `
         <div class="navbar-content">
             <div class="logo">
@@ -187,7 +185,6 @@ const renderNavbar = () => {
     window.updateNavbarBadges();
 };
 
-/* --- Global Logic (Same as before) --- */
 window.updateNavbarBadges = async () => {
     const cart = JSON.parse(localStorage.getItem("toolLinkCart")) || [];
     const cartBadge = document.getElementById("nav-cart-count");

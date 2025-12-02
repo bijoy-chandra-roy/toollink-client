@@ -13,14 +13,13 @@ const loadCart = () => {
     const container = document.querySelector(".cart-items");
     const summaryContainer = document.querySelector(".cart-summary");
 
-    // Get cart from LocalStorage
     let cart = JSON.parse(localStorage.getItem("toolLinkCart")) || [];
 
     container.innerHTML = "";
 
     if (cart.length === 0) {
         container.innerHTML = "<div class='empty-state'><p>Your cart is empty.</p><a href='tools.html' class='btn-primary-sm mt-3'>Browse Tools</a></div>";
-        summaryContainer.style.display = "none"; // Hide summary if empty
+        summaryContainer.style.display = "none";
         return;
     }
 
@@ -72,8 +71,8 @@ const updateDays = (index, change) => {
 
     cart[index].days = newDays;
     localStorage.setItem("toolLinkCart", JSON.stringify(cart));
-    loadCart(); // Re-render
-    updateCartBadge(); // Update navbar badge from script.js helper
+    loadCart();
+    updateCartBadge(); 
 };
 
 const removeItem = (index) => {
@@ -94,7 +93,7 @@ const renderSummary = (subtotal) => {
     document.querySelector(".total-row span:last-child").innerText = `$${total.toFixed(2)}`;
 };
 
-// Make badge update global if needed, or just rely on page refresh
+
 const updateCartBadge = () => {
     if (window.updateNavbarBadges) {
         window.updateNavbarBadges();

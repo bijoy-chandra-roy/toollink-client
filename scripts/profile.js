@@ -8,12 +8,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const user = JSON.parse(userString);
 
-    // Populate the form and display
     document.getElementById("profile-userid").value = user.userId;
     document.getElementById("profile-name").value = user.userName;
     document.getElementById("profile-image-input").value = user.userImage || "";
     
-    // Update the visual header
     document.getElementById("display-name").innerText = user.userName;
     document.getElementById("display-id").innerText = `@${user.userId}`;
     
@@ -26,7 +24,7 @@ const handleUpdateProfile = async (e) => {
     e.preventDefault();
     
     const userString = localStorage.getItem("loggedInUser");
-    if (!userString) return; // Safety check
+    if (!userString) return;
     const currentUser = JSON.parse(userString);
 
     const newName = document.getElementById("profile-name").value;
@@ -42,12 +40,11 @@ const handleUpdateProfile = async (e) => {
                 userId: currentUser.userId,
                 userName: newName,
                 userImage: newImage,
-                userPassword: newPassword // Send it (server handles empty check)
+                userPassword: newPassword 
             })
         });
 
         if (response.ok) {
-            // Update LocalStorage with new data so the UI stays in sync
             const updatedUser = {
                 ...currentUser,
                 userName: newName,
@@ -55,17 +52,15 @@ const handleUpdateProfile = async (e) => {
             };
             localStorage.setItem("loggedInUser", JSON.stringify(updatedUser));
 
-            // Update visual elements immediately
             document.getElementById("display-name").innerText = updatedUser.userName;
             if (updatedUser.userImage) {
                 document.getElementById("profile-img-display").src = updatedUser.userImage;
             }
 
-            // Show success message
             messageEl.classList.remove("hidden");
             setTimeout(() => {
                 messageEl.classList.add("hidden");
-                window.location.reload(); // Refresh to update navbar name
+                window.location.reload();
             }, 1000);
         } else {
             alert("Failed to update profile.");

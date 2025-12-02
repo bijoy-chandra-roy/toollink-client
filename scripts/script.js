@@ -3,7 +3,6 @@ let userWishlistIds = [];
 let currentToolIdForRent = null;
 
 /* Section: Wishlist Logic */
-// CHANGE THIS LINE:
 window.fetchWishlistIds = async () => { 
     const userString = localStorage.getItem("loggedInUser");
     if (!userString) return;
@@ -154,10 +153,9 @@ window.createToolCard = (tool) => {
     const userString = localStorage.getItem("loggedInUser");
     const currentUser = userString ? JSON.parse(userString) : null;
     
-    // 1. Check ownership
     const isOwner = currentUser && tool.ownerId === currentUser.userId;
 
-    // FIX: Changed tool.userImage to tool.ownerImage to match the backend alias
+
     const ownerName = tool.ownerName || "ToolLink User";
     const ownerImage = tool.ownerImage || "./assets/user-placeholder-image.jpg";
     const ownerNickname = ownerName.split(' ')[0];
@@ -173,7 +171,6 @@ window.createToolCard = (tool) => {
     let statusBadge = "";
     let actionButtonsHTML = "";
 
-    // 2. Logic for Action Buttons (Add to Cart / Rent)
     if (tool.status === 'available') {
         if (isOwner) {
             statusBadge = `<div style="position:absolute; top:10px; left:10px; background:#222; color:white; padding:2px 8px; font-size:12px; border-radius:4px; text-transform:uppercase; z-index: 10;">Your Listing</div>`;
@@ -196,15 +193,12 @@ window.createToolCard = (tool) => {
         statusBadge = `<div style="position:absolute; top:10px; left:10px; background:${badgeColor}; color:white; padding:2px 8px; font-size:12px; border-radius:4px; text-transform:uppercase; z-index: 10;">${tool.status}</div>`;
     }
 
-    // 3. Logic to ONLY show heart button if NOT owner
-    // We use a ternary operator: if (isOwner) show nothing, else show button
     const wishlistBtn = isOwner ? '' : `
         <button class="wishlist-btn ${btnActiveClass}" onclick="toggleWishlist(${tool.toolId}, this)">
             <i class="${heartIconClass}"></i>
         </button>
     `;
 
-    // NEW: Owner Info HTML Block
     const ownerInfoHTML = `
         <div class="listing-owner-info">
             <img src="${ownerImage}" alt="${ownerName}" class="owner-avatar" onerror="this.src='./assets/user-placeholder-image.jpg'">
@@ -230,7 +224,6 @@ window.createToolCard = (tool) => {
     `;
 };
 
-/* Section: Homepage Logic */
 window.fetchHomeTools = async () => {
     const container = document.querySelector(".listings-grid");
     if (!container) return;
@@ -243,7 +236,6 @@ window.fetchHomeTools = async () => {
     } catch (error) { console.error("Error loading home tools:", error); }
 };
 
-/* Section: Initialize */
 document.addEventListener('DOMContentLoaded', () => {
     if (document.querySelector(".recent-listings-section")) window.fetchHomeTools();
     if(window.updateNavbarBadges) window.updateNavbarBadges();

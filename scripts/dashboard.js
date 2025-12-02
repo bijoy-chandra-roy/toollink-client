@@ -50,7 +50,6 @@ window.fetchMyListings = async (userId) => {
             if(tool.status === 'rented') badgeClass = "status-rented";
             if(tool.status === 'maintenance') badgeClass = "status-maintenance";
 
-            // NEW: Generate Rental Info HTML if rented
             let rentalInfoHTML = "";
             if (tool.status === 'rented' && tool.renterName) {
                 const start = new Date(tool.startDate).toLocaleDateString();
@@ -105,7 +104,6 @@ window.openEditModal = (index) => {
     document.getElementById("edit-name").value = tool.toolName;
     document.getElementById("edit-category").value = tool.category;
     document.getElementById("edit-price").value = tool.price;
-    // NEW: Populate the image field
     document.getElementById("edit-image").value = tool.toolImage; 
 
     document.getElementById("edit-modal").classList.add("active");
@@ -132,10 +130,8 @@ window.handleUpdateTool = async (e) => {
         });
 
         if (response.ok) {
-            // FIX: Close the Edit Modal IMMEDIATELY here
             window.closeEditModal();
 
-            // Then show the success message
             window.showModal("Success", "Tool updated successfully!", () => {
                 const user = JSON.parse(localStorage.getItem("loggedInUser"));
                 window.fetchMyListings(user.userId);
@@ -155,21 +151,17 @@ window.deleteTool = async (toolId) => {
             method: "DELETE"
         });
 
-        // We parse the response to get the specific message from the server
         const data = await response.json();
 
         if (response.ok) {
-            // Success: Remove from UI
             const item = document.getElementById(`tool-${toolId}`);
             if (item) item.remove();
             
-            // Update the "Active Listings" counter immediately
             const countElement = document.querySelectorAll('.stat-value')[1]; 
             if(countElement) countElement.innerText = parseInt(countElement.innerText) - 1;
             
             window.showModal("Deleted", "Tool deleted successfully.");
         } else {
-            // Error: Show the message (e.g., "Currently rented out")
             window.showModal("Action Blocked", data.message || "Failed to delete tool.");
         }
     } catch (error) {

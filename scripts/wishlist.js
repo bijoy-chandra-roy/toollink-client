@@ -12,7 +12,6 @@ const loadWishlistPage = async (userId) => {
     const container = document.querySelector(".wishlist-grid");
     
     try {
-        // We ensure the global ID cache is populated so createToolCard works correctly
         await fetchWishlistIds(); 
 
         const response = await fetch(`http://localhost:5000/myWishlist/${userId}`);

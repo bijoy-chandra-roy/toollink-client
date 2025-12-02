@@ -14,7 +14,6 @@ const fetchMyOrders = async (userId) => {
     const emptyMsg = document.getElementById("empty-orders-msg");
     const headings = document.querySelectorAll("section.orders-section h3");
 
-    // 1. Reset UI
     activeContainer.innerHTML = "";
     pastContainer.innerHTML = "";
     emptyMsg.classList.add("hidden");
@@ -24,14 +23,12 @@ const fetchMyOrders = async (userId) => {
         const response = await fetch(`http://localhost:5000/myRentals/${userId}`);
         const orders = await response.json();
 
-        // 2. Handle completely empty state
         if (orders.length === 0) {
             emptyMsg.classList.remove("hidden");
             headings.forEach(h => h.style.display = 'none');
             return;
         }
 
-        // 3. Sort and Render Orders
         orders.forEach(order => {
             const start = new Date(order.startDate).toLocaleDateString();
             const end = new Date(order.endDate).toLocaleDateString();
@@ -47,7 +44,6 @@ const fetchMyOrders = async (userId) => {
                 actionButton = `<button class="btn-outline" disabled>Cancelled</button>`;
             }
 
-            // FIX: Added fallback "Unknown" if ownerName is null
             const ownerDisplay = order.ownerName ? order.ownerName : "Unknown";
             const toolNameDisplay = order.toolName ? order.toolName : "Tool Unavailable";
             const toolImageDisplay = order.toolImage ? order.toolImage : "./assets/vecteezy_cordless-electric-drill-with-battery-pack-ideal-for-various_69716390.jpeg";
@@ -82,7 +78,6 @@ const fetchMyOrders = async (userId) => {
                         </div>
                     </div>
                     <div class="order-footer">
-                        <button class="btn-outline">Report Issue</button>
                         ${actionButton}
                     </div>
                 </div>
@@ -95,7 +90,6 @@ const fetchMyOrders = async (userId) => {
             }
         });
 
-        // 5. Handle empty sub-sections
         if (activeContainer.innerHTML === "") {
             activeContainer.innerHTML = `<p style="color:#777; font-style:italic;">No active rentals at the moment.</p>`;
         }
@@ -108,7 +102,6 @@ const fetchMyOrders = async (userId) => {
     }
 };
 
-// --- New Function to Handle Return ---
 const handleReturnTool = async (rentalId, toolId) => {
     try {
         const response = await fetch("http://localhost:5000/returnTool", {

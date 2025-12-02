@@ -1,9 +1,10 @@
-/* Section: Global Variables */
+/* ... Global Variables ... */
 let userWishlistIds = [];
 let currentToolIdForRent = null;
 
 /* Section: Wishlist Logic */
-const fetchWishlistIds = async () => {
+// CHANGE THIS LINE:
+window.fetchWishlistIds = async () => { 
     const userString = localStorage.getItem("loggedInUser");
     if (!userString) return;
     const user = JSON.parse(userString);
@@ -152,6 +153,8 @@ const resetRentButton = (btn, originalText) => {
 window.createToolCard = (tool) => {
     const userString = localStorage.getItem("loggedInUser");
     const currentUser = userString ? JSON.parse(userString) : null;
+    
+    // 1. Check ownership
     const isOwner = currentUser && tool.ownerId === currentUser.userId;
     
     const isWishlisted = userWishlistIds.includes(tool.toolId);
@@ -165,6 +168,7 @@ window.createToolCard = (tool) => {
     let statusBadge = "";
     let actionButtonsHTML = "";
 
+    // 2. Logic for Action Buttons (Add to Cart / Rent)
     if (tool.status === 'available') {
         if (isOwner) {
             statusBadge = `<div style="position:absolute; top:10px; left:10px; background:#222; color:white; padding:2px 8px; font-size:12px; border-radius:4px; text-transform:uppercase; z-index: 10;">Your Listing</div>`;
@@ -172,8 +176,12 @@ window.createToolCard = (tool) => {
         } else {
             actionButtonsHTML = `
                 <div class="listing-actions">
-                    <button class="btn-cart-action" onclick="addToCart(${tool.toolId}, '${safeName}', ${tool.price}, '${safeImage}', '${safeCat}')">Add to Cart</button>
-                    <button class="btn-rent" onclick="rentTool(${tool.toolId})">Rent Now</button>
+                    <button class="btn-cart-action" onclick="addToCart(${tool.toolId}, '${safeName}', ${tool.price}, '${safeImage}', '${safeCat}')">
+                        <span>Add to Cart</span>
+                    </button>
+                    <button class="btn-rent" onclick="rentTool(${tool.toolId})">
+                        <span>Rent Now</span>
+                    </button>
                 </div>
             `;
         }
@@ -183,15 +191,21 @@ window.createToolCard = (tool) => {
         statusBadge = `<div style="position:absolute; top:10px; left:10px; background:${badgeColor}; color:white; padding:2px 8px; font-size:12px; border-radius:4px; text-transform:uppercase; z-index: 10;">${tool.status}</div>`;
     }
 
+    // 3. Logic to ONLY show heart button if NOT owner
+    // We use a ternary operator: if (isOwner) show nothing, else show button
+    const wishlistBtn = isOwner ? '' : `
+        <button class="wishlist-btn ${btnActiveClass}" onclick="toggleWishlist(${tool.toolId}, this)">
+            <i class="${heartIconClass}"></i>
+        </button>
+    `;
+
     return `
         <div class="listing-card" id="card-${tool.toolId}">
             <div class="listing-image">
                 ${statusBadge}
                 <img src="${tool.toolImage}" alt="${tool.toolName}" onerror="this.src='./assets/vecteezy_cordless-electric-drill-with-battery-pack-ideal-for-various_69716390.jpeg'">
-                <button class="wishlist-btn ${btnActiveClass}" onclick="toggleWishlist(${tool.toolId}, this)">
-                    <i class="${heartIconClass}"></i>
-                </button>
-                ${actionButtonsHTML}
+                
+                ${wishlistBtn} ${actionButtonsHTML}
             </div>
             <div class="listing-info">
                 <p class="listing-category">${tool.category}</p>

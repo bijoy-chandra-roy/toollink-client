@@ -50,6 +50,19 @@ window.fetchMyListings = async (userId) => {
             if(tool.status === 'rented') badgeClass = "status-rented";
             if(tool.status === 'maintenance') badgeClass = "status-maintenance";
 
+            // NEW: Generate Rental Info HTML if rented
+            let rentalInfoHTML = "";
+            if (tool.status === 'rented' && tool.renterName) {
+                const start = new Date(tool.startDate).toLocaleDateString();
+                const end = new Date(tool.endDate).toLocaleDateString();
+                rentalInfoHTML = `
+                    <div style="margin-top: 10px; padding-top:10px; border-top:1px solid #eee; font-size: 13px; color: #555;">
+                        <p style="margin-bottom:4px;"><strong>Rented by:</strong> ${tool.renterName}</p>
+                        <p><i class="fa-regular fa-calendar"></i> ${start} - ${end}</p>
+                    </div>
+                `;
+            }
+
             const card = `
                 <div class="lender-card" id="tool-${tool.toolId}">
                     <div class="lender-card-header">
@@ -64,9 +77,11 @@ window.fetchMyListings = async (userId) => {
                             <h3 class="tool-name">${tool.toolName}</h3>
                             <p class="tool-category">${tool.category}</p>
                             <p class="maintenance-note">Price: $${tool.price}/day</p>
+                            
+                            ${rentalInfoHTML}
                         </div>
                         <div class="lender-pricing">
-                            </div>
+                        </div>
                     </div>
                     <div class="lender-card-footer">
                         <button class="btn-outline" onclick="openEditModal(${index})">Edit</button>
@@ -90,6 +105,8 @@ window.openEditModal = (index) => {
     document.getElementById("edit-name").value = tool.toolName;
     document.getElementById("edit-category").value = tool.category;
     document.getElementById("edit-price").value = tool.price;
+    // NEW: Populate the image field
+    document.getElementById("edit-image").value = tool.toolImage; 
 
     document.getElementById("edit-modal").classList.add("active");
 };
@@ -105,17 +122,21 @@ window.handleUpdateTool = async (e) => {
     const toolName = document.getElementById("edit-name").value;
     const category = document.getElementById("edit-category").value;
     const price = document.getElementById("edit-price").value;
+    const toolImage = document.getElementById("edit-image").value; 
 
     try {
         const response = await fetch("http://localhost:5000/updateTool", {
             method: "PUT",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ toolId, toolName, category, price })
+            body: JSON.stringify({ toolId, toolName, category, price, toolImage }) 
         });
 
         if (response.ok) {
+            // FIX: Close the Edit Modal IMMEDIATELY here
+            window.closeEditModal();
+
+            // Then show the success message
             window.showModal("Success", "Tool updated successfully!", () => {
-                window.closeEditModal();
                 const user = JSON.parse(localStorage.getItem("loggedInUser"));
                 window.fetchMyListings(user.userId);
             });

@@ -1,11 +1,4 @@
 document.addEventListener('DOMContentLoaded', () => {
-    const user = window.checkLogin();
-    if (!user) return;
-
-    fetchMyOrders(user.userId);
-});
-
-document.addEventListener('DOMContentLoaded', () => {
     const userString = localStorage.getItem("loggedInUser");
     if (!userString) {
         window.location.href = "login.html";
@@ -20,12 +13,12 @@ const fetchMyOrders = async (userId) => {
     const pastContainer = document.getElementById("past-orders-list");
     const emptyMsg = document.getElementById("empty-orders-msg");
     const headings = document.querySelectorAll("section.orders-section h3");
-    
+
     // 1. Reset UI
     activeContainer.innerHTML = "";
     pastContainer.innerHTML = "";
     emptyMsg.classList.add("hidden");
-    headings.forEach(h => h.style.display = 'block'); // Show headings by default
+    headings.forEach(h => h.style.display = 'block');
 
     try {
         const response = await fetch(`http://localhost:5000/myRentals/${userId}`);
@@ -34,7 +27,7 @@ const fetchMyOrders = async (userId) => {
         // 2. Handle completely empty state
         if (orders.length === 0) {
             emptyMsg.classList.remove("hidden");
-            headings.forEach(h => h.style.display = 'none'); // Hide headings
+            headings.forEach(h => h.style.display = 'none');
             return;
         }
 
@@ -42,17 +35,22 @@ const fetchMyOrders = async (userId) => {
         orders.forEach(order => {
             const start = new Date(order.startDate).toLocaleDateString();
             const end = new Date(order.endDate).toLocaleDateString();
-            
+
             let statusClass = "status-active";
             let actionButton = `<button class="btn-primary-sm" onclick="handleReturnTool(${order.rentalId}, ${order.toolId})">Return Tool</button>`;
 
-            if(order.status === 'completed') {
+            if (order.status === 'completed') {
                 statusClass = "status-completed";
                 actionButton = `<button class="btn-outline" disabled>Returned</button>`;
-            } else if(order.status === 'cancelled') {
+            } else if (order.status === 'cancelled') {
                 statusClass = "status-cancelled";
                 actionButton = `<button class="btn-outline" disabled>Cancelled</button>`;
             }
+
+            // FIX: Added fallback "Unknown" if ownerName is null
+            const ownerDisplay = order.ownerName ? order.ownerName : "Unknown";
+            const toolNameDisplay = order.toolName ? order.toolName : "Tool Unavailable";
+            const toolImageDisplay = order.toolImage ? order.toolImage : "./assets/vecteezy_cordless-electric-drill-with-battery-pack-ideal-for-various_69716390.jpeg";
 
             const card = `
                 <div class="order-card">
@@ -60,16 +58,19 @@ const fetchMyOrders = async (userId) => {
                         <div class="order-meta">
                             <span class="order-id">Order #TL-${order.rentalId}</span>
                             <span class="order-date">Rented on ${start}</span>
+                            <span style="font-size:13px; color:#555; margin-top:2px;">
+                                From: <strong>${ownerDisplay}</strong>
+                            </span>
                         </div>
                         <div class="order-status ${statusClass}">${order.status}</div>
                     </div>
                     <div class="order-body">
                         <div class="order-image">
-                            <img src="${order.toolImage}" alt="${order.toolName}" onerror="this.src='./assets/vecteezy_cordless-electric-drill-with-battery-pack-ideal-for-various_69716390.jpeg'">
+                            <img src="${toolImageDisplay}" alt="${toolNameDisplay}" onerror="this.src='./assets/vecteezy_cordless-electric-drill-with-battery-pack-ideal-for-various_69716390.jpeg'">
                         </div>
                         <div class="order-info">
-                            <h3 class="tool-name">${order.toolName}</h3>
-                            <p class="tool-category">${order.category}</p>
+                            <h3 class="tool-name">${toolNameDisplay}</h3>
+                            <p class="tool-category">${order.category || 'N/A'}</p>
                             <div class="rental-period">
                                 <i class="fa-regular fa-calendar"></i>
                                 <span>Due: ${end}</span>
@@ -87,7 +88,6 @@ const fetchMyOrders = async (userId) => {
                 </div>
             `;
 
-            // 4. Inject into correct container
             if (order.status === 'active') {
                 activeContainer.innerHTML += card;
             } else {
